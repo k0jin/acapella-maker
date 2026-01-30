@@ -39,11 +39,13 @@ class InputSection(QWidget):
 
         group = QGroupBox("Input")
         group_layout = QVBoxLayout(group)
+        group_layout.setSpacing(12)
+        group_layout.setContentsMargins(16, 16, 16, 16)
 
         # File input row
         file_layout = QHBoxLayout()
         file_label = QLabel("File:")
-        file_label.setFixedWidth(70)
+        file_label.setFixedWidth(80)
         self.file_edit = QLineEdit()
         self.file_edit.setPlaceholderText("Select an audio file or drag and drop...")
         self.browse_btn = QPushButton("Browse...")
@@ -54,13 +56,16 @@ class InputSection(QWidget):
 
         # Separator
         separator_layout = QHBoxLayout()
-        separator_layout.addWidget(QLabel("— or —"))
+        separator_label = QLabel("— or —")
+        separator_layout.addStretch()
+        separator_layout.addWidget(separator_label)
+        separator_layout.addStretch()
         group_layout.addLayout(separator_layout)
 
         # YouTube URL row
         url_layout = QHBoxLayout()
         url_label = QLabel("YouTube:")
-        url_label.setFixedWidth(70)
+        url_label.setFixedWidth(80)
         self.url_edit = QLineEdit()
         self.url_edit.setPlaceholderText("Paste a YouTube URL...")
         self.url_status = QLabel()

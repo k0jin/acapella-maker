@@ -40,6 +40,8 @@ class ResultsSection(QWidget):
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
         frame.setStyleSheet("QFrame { background-color: #e8f5e9; }")
         frame_layout = QVBoxLayout(frame)
+        frame_layout.setSpacing(10)
+        frame_layout.setContentsMargins(16, 12, 16, 12)
 
         # Success header
         header = QLabel("Processing Complete!")
@@ -49,6 +51,7 @@ class ResultsSection(QWidget):
         # Results grid
         grid = QGridLayout()
         grid.setColumnStretch(1, 1)
+        grid.setHorizontalSpacing(12)
 
         self.output_label = QLabel()
         self.output_label.setWordWrap(True)

@@ -33,10 +33,12 @@ class OutputSection(QWidget):
 
         group = QGroupBox("Output")
         group_layout = QVBoxLayout(group)
+        group_layout.setSpacing(12)
+        group_layout.setContentsMargins(16, 16, 16, 16)
 
         output_layout = QHBoxLayout()
         output_label = QLabel("Save to:")
-        output_label.setFixedWidth(70)
+        output_label.setFixedWidth(80)
         self.output_edit = QLineEdit()
         self.output_edit.setPlaceholderText("Output file path...")
         self.browse_btn = QPushButton("Browse...")

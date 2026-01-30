@@ -37,12 +37,13 @@ class MainWindow(QMainWindow):
     def _setup_ui(self) -> None:
         """Set up the user interface components."""
         self.setWindowTitle("Acapella Maker")
-        self.setMinimumSize(500, 400)
+        self.setMinimumSize(600, 500)
 
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
-        layout.setSpacing(10)
+        layout.setSpacing(16)
+        layout.setContentsMargins(20, 20, 20, 20)
 
         # Input section
         self.input_section = InputSection()

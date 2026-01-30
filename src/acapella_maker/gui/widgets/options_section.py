@@ -32,11 +32,13 @@ class OptionsSection(QWidget):
 
         group = QGroupBox("Options")
         group_layout = QVBoxLayout(group)
+        group_layout.setSpacing(12)
+        group_layout.setContentsMargins(16, 16, 16, 16)
 
         # Silence threshold row
         threshold_layout = QHBoxLayout()
         threshold_label = QLabel("Silence threshold:")
-        threshold_label.setFixedWidth(120)
+        threshold_label.setMinimumWidth(110)
 
         self.threshold_slider = QSlider(Qt.Orientation.Horizontal)
         self.threshold_slider.setRange(0, 100)
@@ -48,7 +50,7 @@ class OptionsSection(QWidget):
         self.threshold_spin.setRange(0, 100)
         self.threshold_spin.setValue(30)
         self.threshold_spin.setSuffix(" dB")
-        self.threshold_spin.setFixedWidth(70)
+        self.threshold_spin.setFixedWidth(80)
 
         threshold_layout.addWidget(threshold_label)
         threshold_layout.addWidget(self.threshold_slider, 1)
@@ -56,12 +58,16 @@ class OptionsSection(QWidget):
         group_layout.addLayout(threshold_layout)
 
         # Trim silence checkbox
+        checkbox_layout = QHBoxLayout()
+        checkbox_layout.setContentsMargins(110, 0, 0, 0)
         self.trim_checkbox = QCheckBox("Trim leading silence")
         self.trim_checkbox.setChecked(True)
         self.trim_checkbox.setToolTip(
             "Remove silence from the beginning of the extracted vocals"
         )
-        group_layout.addWidget(self.trim_checkbox)
+        checkbox_layout.addWidget(self.trim_checkbox)
+        checkbox_layout.addStretch()
+        group_layout.addLayout(checkbox_layout)
 
         layout.addWidget(group)
 
