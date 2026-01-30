@@ -1,11 +1,49 @@
 """YouTube audio download functionality."""
 
 import re
+import shutil
+import sys
 from pathlib import Path
+from typing import Optional
 
 import yt_dlp
 
 from acapella_maker.exceptions import YouTubeDownloadError
+
+
+def _get_ffmpeg_location() -> Optional[str]:
+    """Find FFmpeg binary location.
+
+    Checks in order:
+    1. PyInstaller bundle directory (for standalone app)
+    2. Project's ffmpeg_bin directory (for development)
+    3. System PATH
+
+    Returns:
+        Path to directory containing ffmpeg, or None if not found.
+    """
+    # Check PyInstaller bundle directory
+    if getattr(sys, "frozen", False):
+        bundle_dir = Path(sys._MEIPASS)
+        ffmpeg_path = bundle_dir / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+        if ffmpeg_path.exists():
+            return str(bundle_dir)
+
+    # Check project ffmpeg_bin directory (development)
+    # Walk up from this file to find project root
+    current = Path(__file__).resolve()
+    for parent in current.parents:
+        ffmpeg_bin = parent / "ffmpeg_bin"
+        if ffmpeg_bin.exists():
+            ffmpeg_path = ffmpeg_bin / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+            if ffmpeg_path.exists():
+                return str(ffmpeg_bin)
+
+    # Check system PATH
+    if shutil.which("ffmpeg"):
+        return None  # yt-dlp will find it automatically
+
+    return None
 
 YOUTUBE_PATTERNS = [
     r"^https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+",
@@ -57,6 +95,11 @@ def download_audio(url: str, output_dir: Path) -> Path:
         "no_warnings": True,
         "restrictfilenames": True,
     }
+
+    # Use bundled FFmpeg if available
+    ffmpeg_location = _get_ffmpeg_location()
+    if ffmpeg_location:
+        ydl_opts["ffmpeg_location"] = ffmpeg_location
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
