@@ -37,6 +37,22 @@ class ColorManager:
         """
         return self._config.surface
 
+    @property
+    def background(self) -> str:
+        """Get the background color (main window background).
+
+        Returns empty string if not set, meaning system default should be used.
+        """
+        return self._config.background
+
+    @property
+    def button(self) -> str:
+        """Get the button color (button background).
+
+        Returns empty string if not set, meaning system default should be used.
+        """
+        return self._config.button
+
 
 def build_stylesheet(color_manager: ColorManager) -> str:
     """Generate a global QSS stylesheet from color configuration.
@@ -48,6 +64,22 @@ def build_stylesheet(color_manager: ColorManager) -> str:
         QSS stylesheet string to apply globally.
     """
     rules = []
+
+    # Main window background color
+    if color_manager.background:
+        rules.append(f"""
+QMainWindow, QMainWindow > QWidget {{
+    background-color: {color_manager.background};
+}}
+""")
+
+    # Button background color
+    if color_manager.button:
+        rules.append(f"""
+QPushButton {{
+    background-color: {color_manager.button};
+}}
+""")
 
     # Progress bar accent color
     if color_manager.accent:

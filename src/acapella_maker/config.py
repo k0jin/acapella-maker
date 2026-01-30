@@ -94,6 +94,8 @@ class ColorsConfig:
     error: str = "#c62828"  # Error states, invalid input
     accent: str = "#B23A3A"  # Primary action color (progress bar, buttons)
     surface: str = "#6D675C"  # Elevated backgrounds (empty = system default)
+    background: str = "#E5E0DA"  # Main window background (empty = system default)
+    button: str = "#89847F"  # Button background color (empty = system default)
 
 
 @dataclass
@@ -143,6 +145,10 @@ class Config:
             colors_dict["accent"] = self.colors.accent
         if self.colors.surface:
             colors_dict["surface"] = self.colors.surface
+        if self.colors.background:
+            colors_dict["background"] = self.colors.background
+        if self.colors.button:
+            colors_dict["button"] = self.colors.button
         if colors_dict:
             result["colors"] = colors_dict
         return result
@@ -184,6 +190,8 @@ class Config:
                 error=colors_data.get("error", "#c62828"),
                 accent=colors_data.get("accent", "#1976d2"),
                 surface=colors_data.get("surface", ""),
+                background=colors_data.get("background", ""),
+                button=colors_data.get("button", ""),
             ),
         )
 

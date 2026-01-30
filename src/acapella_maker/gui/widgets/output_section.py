@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Callable, Optional
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QFileDialog,
     QGroupBox,
@@ -44,6 +44,7 @@ class OutputSection(QWidget):
         output_layout = QHBoxLayout()
         output_label = QLabel("Save to:")
         output_label.setFixedWidth(80)
+        output_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.output_edit = QLineEdit()
         self.output_edit.setPlaceholderText("Output file path...")
         self.browse_btn = QPushButton("Browse...")

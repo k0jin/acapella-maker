@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QDragEnterEvent, QDropEvent
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -54,6 +54,7 @@ class InputSection(QWidget):
         file_layout = QHBoxLayout()
         file_label = QLabel("File:")
         file_label.setFixedWidth(80)
+        file_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.file_edit = QLineEdit()
         self.file_edit.setPlaceholderText("Select an audio file or drag and drop...")
         self.browse_btn = QPushButton("Browse...")
@@ -74,6 +75,7 @@ class InputSection(QWidget):
         url_layout = QHBoxLayout()
         url_label = QLabel("YouTube:")
         url_label.setFixedWidth(80)
+        url_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         self.url_edit = QLineEdit()
         self.url_edit.setPlaceholderText("Paste a YouTube URL...")
         self.url_status = QLabel()
