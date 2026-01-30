@@ -193,6 +193,60 @@ def download_demucs_models() -> None:
         print("Models will be downloaded on first run")
 
 
+def convert_icon_to_icns(project_dir: Path) -> None:
+    """Convert icon.png to AppIcon.icns for macOS app bundle."""
+    if get_platform() != "darwin":
+        return
+
+    icon_png = project_dir / "src" / "acapella_maker" / "gui" / "icon.png"
+    icon_icns = project_dir / "src" / "acapella_maker" / "gui" / "AppIcon.icns"
+
+    if not icon_png.exists():
+        print(f"Warning: Icon PNG not found: {icon_png}")
+        return
+
+    print(f"Converting {icon_png.name} to {icon_icns.name}...")
+
+    iconset_dir = project_dir / "AppIcon.iconset"
+    iconset_dir.mkdir(exist_ok=True)
+
+    # Generate all required icon sizes
+    sizes = [
+        (16, "icon_16x16.png"),
+        (32, "icon_16x16@2x.png"),
+        (32, "icon_32x32.png"),
+        (64, "icon_32x32@2x.png"),
+        (128, "icon_128x128.png"),
+        (256, "icon_128x128@2x.png"),
+        (256, "icon_256x256.png"),
+        (512, "icon_256x256@2x.png"),
+        (512, "icon_512x512.png"),
+        (1024, "icon_512x512@2x.png"),
+    ]
+
+    try:
+        for size, filename in sizes:
+            output = iconset_dir / filename
+            subprocess.run(
+                ["sips", "-z", str(size), str(size), str(icon_png), "--out", str(output)],
+                check=True,
+                capture_output=True,
+            )
+
+        # Convert iconset to icns
+        subprocess.run(
+            ["iconutil", "-c", "icns", str(iconset_dir), "-o", str(icon_icns)],
+            check=True,
+            capture_output=True,
+        )
+        print(f"Icon converted: {icon_icns}")
+
+    finally:
+        # Clean up iconset directory
+        if iconset_dir.exists():
+            shutil.rmtree(iconset_dir)
+
+
 def run_pyinstaller(spec_file: Path) -> None:
     """Run PyInstaller with the spec file."""
     print(f"Running PyInstaller with: {spec_file}")
@@ -313,6 +367,8 @@ def main() -> int:
 
     # Build GUI
     if build_gui:
+        print("\n=== Converting App Icon ===")
+        convert_icon_to_icns(project_dir)
         print("\n=== Building GUI App ===")
         run_pyinstaller(gui_spec_file)
 

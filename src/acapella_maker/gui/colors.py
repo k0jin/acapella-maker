@@ -57,23 +57,24 @@ QProgressBar::chunk {{
 }}
 """)
 
-    # Button accent styling (for default buttons)
-    if color_manager.accent:
-        rules.append(f"""
-QPushButton[default="true"] {{
-    background-color: {color_manager.accent};
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    # Surface color for group boxes and frames
+    if color_manager.surface:
+        surface_style = f"background-color: {color_manager.surface};"
+    else:
+        surface_style = "background-color: palette(alternate-base);"
+
+    rules.append(f"""
+QGroupBox {{
+    {surface_style}
+    border-radius: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
 }}
-QPushButton[default="true"]:hover {{
-    background-color: {color_manager.accent};
-    opacity: 0.9;
-}}
-QPushButton[default="true"]:disabled {{
-    background-color: #cccccc;
-    color: #888888;
+QGroupBox::title {{
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 4px;
 }}
 """)
 
