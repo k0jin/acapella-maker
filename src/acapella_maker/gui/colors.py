@@ -53,6 +53,16 @@ class ColorManager:
         """
         return self._config.button_background
 
+    @property
+    def header_text(self) -> str:
+        """Get the section header text color."""
+        return self._config.header_text
+
+    @property
+    def panel_text(self) -> str:
+        """Get the in-panel text color."""
+        return self._config.panel_text
+
 
 def build_stylesheet(color_manager: ColorManager) -> str:
     """Generate a global QSS stylesheet from color configuration.
@@ -92,10 +102,20 @@ QProgressBar::chunk {{
     # Panel background color for group boxes and frames
     if color_manager.panel_background:
         surface_style = f"background-color: {color_manager.panel_background};"
-        title_color = f"color: {color_manager.panel_background};"
     else:
         surface_style = "background-color: palette(alternate-base);"
+
+    # Header text color (section titles like "Input", "Options", "Output")
+    if color_manager.header_text:
+        title_color = f"color: {color_manager.header_text};"
+    else:
         title_color = ""
+
+    # Panel text color (labels inside panels)
+    if color_manager.panel_text:
+        panel_text_style = f"color: {color_manager.panel_text};"
+    else:
+        panel_text_style = ""
 
     rules.append(f"""
 QGroupBox {{
@@ -112,6 +132,9 @@ QGroupBox::title {{
     padding: 0 0 4px 0;
     font-weight: bold;
     {title_color}
+}}
+QGroupBox QLabel {{
+    {panel_text_style}
 }}
 """)
 

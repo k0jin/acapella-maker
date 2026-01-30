@@ -96,6 +96,8 @@ class ColorsConfig:
     panel_background: str = "#E5E0DA"  # QGroupBox/QFrame backgrounds
     window_background: str = "#6D675C" # Main window background
     button_background: str = "#89847F"  # Button background color
+    header_text: str = "#B23A3A"   # Section header text color
+    panel_text: str = "#6D675C"  # In-panel text color
 
 
 @dataclass
@@ -149,6 +151,10 @@ class Config:
             colors_dict["window_background"] = self.colors.window_background
         if self.colors.button_background:
             colors_dict["button_background"] = self.colors.button_background
+        if self.colors.header_text:
+            colors_dict["header_text"] = self.colors.header_text
+        if self.colors.panel_text:
+            colors_dict["panel_text"] = self.colors.panel_text
         if colors_dict:
             result["colors"] = colors_dict
         return result
@@ -192,6 +198,8 @@ class Config:
                 panel_background=colors_data.get("panel_background", ""),
                 window_background=colors_data.get("window_background", ""),
                 button_background=colors_data.get("button_background", ""),
+                header_text=colors_data.get("header_text", "#E5E0DA"),
+                panel_text=colors_data.get("panel_text", "#3D3D3D"),
             ),
         )
 
