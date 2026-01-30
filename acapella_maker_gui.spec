@@ -33,14 +33,16 @@ def find_demucs_models():
 # Collect data files
 datas = []
 
-# Add demucs remote directory for model signatures
+# Add demucs remote directory for model signatures and files.txt
 try:
     import demucs
     demucs_path = Path(demucs.__file__).parent
     remote_dir = demucs_path / "remote"
     if remote_dir.exists():
-        for f in remote_dir.glob("*.yaml"):
-            datas.append((str(f), "demucs/remote"))
+        # Include all files (yaml configs and files.txt)
+        for f in remote_dir.iterdir():
+            if f.is_file():
+                datas.append((str(f), "demucs/remote"))
 except ImportError:
     pass
 
@@ -168,7 +170,7 @@ if sys.platform == "darwin":
     app = BUNDLE(
         coll,
         name="Acapella Maker.app",
-        icon=None,  # Add icon path here if available
+        icon="src/acapella_maker/gui/AppIcon.icns",
         bundle_identifier="com.acapellamaker.app",
         info_plist={
             "CFBundleName": "Acapella Maker",
