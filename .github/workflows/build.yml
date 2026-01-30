@@ -1,0 +1,142 @@
+name: Build Standalone Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a GitHub release'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            platform: macos
+            artifact: acapella-maker-macos.tar.gz
+          - os: windows-latest
+            platform: windows
+            artifact: acapella-maker-windows.zip
+          - os: ubuntu-latest
+            platform: linux
+            artifact: acapella-maker-linux.tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install system dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsndfile1
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[build]"
+
+      - name: Run build script
+        run: |
+          python scripts/build.py --output-name acapella-maker-${{ matrix.platform }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+          retention-days: 30
+
+      - name: Test executable (Unix)
+        if: matrix.platform != 'windows'
+        run: |
+          tar -xzf acapella-maker-${{ matrix.platform }}.tar.gz
+          ./acapella-maker/acapella-maker --version
+
+      - name: Test executable (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          Expand-Archive -Path acapella-maker-windows.zip -DestinationPath .
+          .\acapella-maker\acapella-maker.exe --version
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.create_release)
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "version=manual-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          files: |
+            artifacts/acapella-maker-macos.tar.gz/acapella-maker-macos.tar.gz
+            artifacts/acapella-maker-windows.zip/acapella-maker-windows.zip
+            artifacts/acapella-maker-linux.tar.gz/acapella-maker-linux.tar.gz
+          body: |
+            ## Acapella Maker ${{ steps.version.outputs.version }}
+
+            Standalone executables for extracting acapella vocals from audio files.
+
+            ### Downloads
+
+            | Platform | File |
+            |----------|------|
+            | macOS | `acapella-maker-macos.tar.gz` |
+            | Windows | `acapella-maker-windows.zip` |
+            | Linux | `acapella-maker-linux.tar.gz` |
+
+            ### Usage
+
+            1. Download the archive for your platform
+            2. Extract the archive
+            3. Run the executable:
+               - macOS/Linux: `./acapella-maker/acapella-maker extract input.mp3`
+               - Windows: `.\acapella-maker\acapella-maker.exe extract input.mp3`
+
+            ### Features
+
+            - Extract vocals from any audio file
+            - Download and process YouTube videos
+            - Detect BPM
+            - Trim silence from output
+
+            ### Requirements
+
+            No additional installation required - all dependencies are bundled.
