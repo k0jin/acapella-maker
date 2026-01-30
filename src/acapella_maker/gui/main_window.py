@@ -1,6 +1,6 @@
 """Main application window for Acapella Maker GUI."""
 
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QCloseEvent
@@ -20,7 +20,7 @@ from acapella_maker.gui.widgets import (
     ProgressSection,
     ResultsSection,
 )
-from acapella_maker.gui.workers import BPMWorker, ExtractionWorker
+from acapella_maker.gui.workers import BaseWorker, BPMWorker, ExtractionWorker
 from acapella_maker.models.result import ProcessingResult
 
 
@@ -114,6 +114,16 @@ class MainWindow(QMainWindow):
         self.output_section.set_from_input(input_path, is_youtube)
         self._update_button_state()
 
+    def _connect_worker_signals(
+        self, worker: BaseWorker, on_finished: Callable
+    ) -> None:
+        """Connect common worker signals."""
+        worker.stage_changed.connect(self.progress_section.set_stage)
+        worker.progress.connect(self.progress_section.update_progress)
+        worker.finished_ok.connect(on_finished)
+        worker.error.connect(self._on_error)
+        worker.finished.connect(self._on_worker_done)
+
     def _on_extract(self) -> None:
         """Start acapella extraction."""
         if not self._validate_inputs():
@@ -129,12 +139,8 @@ class MainWindow(QMainWindow):
             trim_silence=self.options_section.get_trim_silence(),
             parent=self,
         )
-        self._worker.stage_changed.connect(self.progress_section.set_stage)
-        self._worker.progress.connect(self.progress_section.update_progress)
         self._worker.bpm_detected.connect(self.progress_section.set_bpm)
-        self._worker.finished_ok.connect(self._on_extraction_finished)
-        self._worker.error.connect(self._on_error)
-        self._worker.finished.connect(self._on_worker_done)
+        self._connect_worker_signals(self._worker, self._on_extraction_finished)
         self._worker.start()
 
     def _on_bpm_only(self) -> None:
@@ -152,11 +158,7 @@ class MainWindow(QMainWindow):
             input_path=self.input_section.get_input(),
             parent=self,
         )
-        self._worker.stage_changed.connect(self.progress_section.set_stage)
-        self._worker.progress.connect(self.progress_section.update_progress)
-        self._worker.finished_ok.connect(self._on_bpm_finished)
-        self._worker.error.connect(self._on_error)
-        self._worker.finished.connect(self._on_worker_done)
+        self._connect_worker_signals(self._worker, self._on_bpm_finished)
         self._worker.start()
 
     def _validate_inputs(self) -> bool:

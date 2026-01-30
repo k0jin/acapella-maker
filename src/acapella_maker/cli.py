@@ -18,6 +18,17 @@ DOWNLOADS_DIR = Path.home() / "Downloads"
 if not DOWNLOADS_DIR.exists():
     DOWNLOADS_DIR = Path.cwd()
 
+
+def spinner_progress(console: Console) -> Progress:
+    """Create a spinner progress display."""
+    return Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+        transient=True,
+    )
+
+
 app = typer.Typer(
     name="acapella-maker",
     help="Extract acapella vocals from audio files.",
@@ -49,12 +60,7 @@ def resolve_input_source(input_source: str, console: Console) -> tuple[Path, str
     """
     if is_youtube_url(input_source):
         temp_dir = tempfile.mkdtemp(prefix="acapella_maker_")
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-            transient=True,
-        ) as progress:
+        with spinner_progress(console) as progress:
             task = progress.add_task("Downloading from YouTube...", total=None)
             input_file = download_audio(input_source, Path(temp_dir))
             progress.remove_task(task)
@@ -134,12 +140,7 @@ def extract(
         if output is None:
             output = DOWNLOADS_DIR / f"{input_file.stem}_acapella.wav"
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-            transient=True,
-        ) as progress:
+        with spinner_progress(console) as progress:
             # BPM detection
             task = progress.add_task("Detecting BPM...", total=None)
             bpm = pipeline.detect_bpm_only(input_file)
@@ -196,12 +197,7 @@ def bpm(
     try:
         input_file, temp_dir = resolve_input_source(input_source, console)
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            console=console,
-            transient=True,
-        ) as progress:
+        with spinner_progress(console) as progress:
             task = progress.add_task("Analyzing...", total=None)
             detected_bpm = pipeline.detect_bpm_only(input_file)
             progress.remove_task(task)

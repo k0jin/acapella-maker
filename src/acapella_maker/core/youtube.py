@@ -3,8 +3,10 @@
 import re
 import shutil
 import sys
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Optional
+from typing import Generator, Optional
 
 import yt_dlp
 
@@ -131,3 +133,23 @@ def download_audio(url: str, output_dir: Path) -> Path:
         if isinstance(e, YouTubeDownloadError):
             raise
         raise YouTubeDownloadError(f"Unexpected error during download: {e}") from e
+
+
+@contextmanager
+def youtube_audio(url: str) -> Generator[Path, None, None]:
+    """Download YouTube audio, yield path, auto-cleanup.
+
+    Args:
+        url: YouTube URL to download from.
+
+    Yields:
+        Path to the downloaded audio file.
+
+    Raises:
+        YouTubeDownloadError: If download fails.
+    """
+    temp_dir = tempfile.mkdtemp(prefix="acapella_maker_")
+    try:
+        yield download_audio(url, Path(temp_dir))
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
