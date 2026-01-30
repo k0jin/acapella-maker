@@ -5,6 +5,8 @@ import os
 import sys
 from pathlib import Path
 
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_dynamic_libs
+
 block_cipher = None
 
 # Find demucs pretrained models directory
@@ -60,16 +62,39 @@ hiddenimports = [
     "demucs.htdemucs",
     "yt_dlp",
     "certifi",
-    "PySide6",
-    "PySide6.QtCore",
-    "PySide6.QtWidgets",
-    "PySide6.QtGui",
 ]
+
+# Collect all PySide6 submodules
+hiddenimports += collect_submodules("PySide6")
+
+# Collect all demucs submodules
+hiddenimports += collect_submodules("demucs")
+
+# Collect all yt_dlp submodules
+hiddenimports += collect_submodules("yt_dlp")
+
+# Collect PySide6 data files (plugins, etc.)
+datas += collect_data_files("PySide6")
+
+# Collect torch data files
+datas += collect_data_files("torch")
+
+# Include certifi certificates
+import certifi
+datas.append((certifi.where(), "certifi"))
+
+# Collect PySide6 binaries/dynamic libs
+binaries = []
+binaries += collect_dynamic_libs("PySide6")
+
+# Get spec directory for pathex
+spec_dir = Path(SPECPATH)
+src_dir = spec_dir / "src"
 
 a = Analysis(
     ["src/acapella_maker/gui/__init__.py"],
-    pathex=[],
-    binaries=[],
+    pathex=[str(src_dir)],
+    binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
     hookspath=[],
@@ -82,6 +107,8 @@ a = Analysis(
         "IPython",
         "jupyter",
         "notebook",
+        "pytest",
+        # Note: unittest is needed by torch, do not exclude
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,

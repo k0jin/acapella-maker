@@ -248,7 +248,7 @@ def main() -> int:
     """Main build function."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Build acapella-maker standalone executable")
+    parser = argparse.ArgumentParser(description="Build acapella-maker standalone executables")
     parser.add_argument(
         "--skip-ffmpeg",
         action="store_true",
@@ -260,6 +260,16 @@ def main() -> int:
         help="Skip demucs model download",
     )
     parser.add_argument(
+        "--cli-only",
+        action="store_true",
+        help="Build CLI only (skip GUI)",
+    )
+    parser.add_argument(
+        "--gui-only",
+        action="store_true",
+        help="Build GUI only (skip CLI)",
+    )
+    parser.add_argument(
         "--output-name",
         default=None,
         help="Output archive name (without extension)",
@@ -269,12 +279,21 @@ def main() -> int:
     # Determine paths
     script_dir = Path(__file__).parent
     project_dir = script_dir.parent
-    spec_file = project_dir / "acapella-maker.spec"
+    cli_spec_file = project_dir / "acapella-maker.spec"
+    gui_spec_file = project_dir / "acapella_maker_gui.spec"
     ffmpeg_dir = project_dir / "ffmpeg_bin"
     dist_dir = project_dir / "dist"
+    plat = get_platform()
 
-    if not spec_file.exists():
-        print(f"Error: Spec file not found: {spec_file}")
+    build_cli = not args.gui_only
+    build_gui = not args.cli_only and plat == "darwin"  # GUI .app only on macOS
+
+    if build_cli and not cli_spec_file.exists():
+        print(f"Error: CLI spec file not found: {cli_spec_file}")
+        return 1
+
+    if build_gui and not gui_spec_file.exists():
+        print(f"Error: GUI spec file not found: {gui_spec_file}")
         return 1
 
     # Download FFmpeg
@@ -287,24 +306,33 @@ def main() -> int:
         print("\n=== Downloading Demucs Models ===")
         download_demucs_models()
 
-    # Run PyInstaller
-    print("\n=== Running PyInstaller ===")
-    run_pyinstaller(spec_file)
+    # Build CLI
+    if build_cli:
+        print("\n=== Building CLI ===")
+        run_pyinstaller(cli_spec_file)
 
-    # Create archive
-    print("\n=== Creating Archive ===")
-    plat = get_platform()
-    plat_name = {"darwin": "macos", "linux": "linux", "win32": "windows"}[plat]
-    output_name = args.output_name or f"acapella-maker-{plat_name}"
-    archive_path = create_archive(dist_dir, output_name)
+    # Build GUI
+    if build_gui:
+        print("\n=== Building GUI App ===")
+        run_pyinstaller(gui_spec_file)
+
+    # Create CLI archive
+    if build_cli:
+        print("\n=== Creating CLI Archive ===")
+        plat_name = {"darwin": "macos", "linux": "linux", "win32": "windows"}[plat]
+        output_name = args.output_name or f"acapella-maker-{plat_name}"
+        archive_path = create_archive(dist_dir, output_name)
 
     # Cleanup ffmpeg_bin directory
     if ffmpeg_dir.exists():
         shutil.rmtree(ffmpeg_dir)
 
     print("\n=== Build Complete ===")
-    print(f"Executable: {dist_dir / 'acapella-maker'}")
-    print(f"Archive: {archive_path}")
+    if build_cli:
+        print(f"CLI Executable: {dist_dir / 'acapella-maker'}")
+        print(f"CLI Archive: {archive_path}")
+    if build_gui:
+        print(f"GUI App: {dist_dir / 'Acapella Maker.app'}")
 
     return 0
 
