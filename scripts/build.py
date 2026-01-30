@@ -5,12 +5,15 @@ import hashlib
 import os
 import platform
 import shutil
+import ssl
 import subprocess
 import sys
 import tarfile
 import zipfile
 from pathlib import Path
 from urllib.request import urlopen
+
+import certifi
 
 # FFmpeg download URLs and checksums
 FFMPEG_URLS = {
@@ -46,7 +49,8 @@ def get_platform() -> str:
 def download_file(url: str, dest: Path, desc: str = "Downloading") -> None:
     """Download a file with progress indication."""
     print(f"{desc}: {url}")
-    with urlopen(url) as response:
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    with urlopen(url, context=ssl_context) as response:
         total = int(response.headers.get("content-length", 0))
         downloaded = 0
         chunk_size = 8192

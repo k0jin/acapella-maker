@@ -114,7 +114,7 @@ a = Analysis(
         "PySide6",
         # Exclude test frameworks
         "pytest",
-        "unittest",
+        # Note: unittest is needed by torch, do not exclude
         # Exclude development tools
         "IPython",
         "jupyter",
