@@ -49,11 +49,14 @@ class ProgressSection(QWidget):
         self.progress_bar.setTextVisible(True)
         frame_layout.addWidget(self.progress_bar)
 
-        # Bottom row: elapsed time and cancel button
+        # Bottom row: elapsed time, BPM, and cancel button
         bottom_layout = QHBoxLayout()
 
         self.elapsed_label = QLabel("Elapsed: 0:00")
         bottom_layout.addWidget(self.elapsed_label)
+
+        self.bpm_label = QLabel("")
+        bottom_layout.addWidget(self.bpm_label)
 
         bottom_layout.addStretch()
 
@@ -102,7 +105,16 @@ class ProgressSection(QWidget):
         self.progress_bar.setValue(0)
         self.stage_label.setText("Preparing...")
         self.elapsed_label.setText("Elapsed: 0:00")
+        self.bpm_label.setText("")
         self.hide()
+
+    def set_bpm(self, bpm: int) -> None:
+        """Update the BPM display label.
+
+        Args:
+            bpm: Detected BPM as a whole number.
+        """
+        self.bpm_label.setText(f"  |  BPM: {bpm}")
 
     def set_stage(self, stage: str) -> None:
         """Update the current stage label."""

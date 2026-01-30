@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
         )
         self._worker.stage_changed.connect(self.progress_section.set_stage)
         self._worker.progress.connect(self.progress_section.update_progress)
+        self._worker.bpm_detected.connect(self.progress_section.set_bpm)
         self._worker.finished_ok.connect(self._on_extraction_finished)
         self._worker.error.connect(self._on_error)
         self._worker.finished.connect(self._on_worker_done)
@@ -163,7 +164,6 @@ class MainWindow(QMainWindow):
         Returns:
             True if all inputs are valid, False otherwise.
         """
-        """Validate inputs before processing."""
         if not self.input_section.is_valid():
             QMessageBox.warning(
                 self, "Invalid Input", "Please select a valid audio file or YouTube URL."

@@ -49,10 +49,13 @@ class AcapellaPipeline:
         else:
             output_path = Path(output_path)
 
-        # Step 1: Detect BPM from original track
-        self._report_progress("Detecting BPM", 0)
-        bpm = detect_bpm(input_path)
-        self._report_progress("Detecting BPM", 100)
+        # Step 1: Detect BPM from original track (skip if pre-detected)
+        if self.options.pre_detected_bpm is not None:
+            bpm = self.options.pre_detected_bpm
+        else:
+            self._report_progress("Detecting BPM", 0)
+            bpm = detect_bpm(input_path)
+            self._report_progress("Detecting BPM", 100)
 
         # Step 2: Extract vocals
         self._report_progress("Extracting vocals", 0)

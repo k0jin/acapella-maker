@@ -17,6 +17,7 @@ class ExtractionWorker(QThread):
 
     stage_changed = Signal(str)
     progress = Signal(str, float)
+    bpm_detected = Signal(int)  # Emits BPM as whole number
     finished_ok = Signal(ProcessingResult)
     error = Signal(str)
 
@@ -75,16 +76,34 @@ class ExtractionWorker(QThread):
 
                 self.progress.emit("Downloading from YouTube...", 100)
 
-            # Create processing options
+            # Detect BPM first (before full pipeline)
+            self.stage_changed.emit("Detecting BPM")
+            self.progress.emit("Detecting BPM", 0)
+            pipeline = AcapellaPipeline()
+            bpm = pipeline.detect_bpm_only(audio_path)
+            bpm_int = round(bpm)
+            self.bpm_detected.emit(bpm_int)
+            self.progress.emit("Detecting BPM", 100)
+
+            if self._cancelled:
+                return
+
+            # Modify output path to include BPM suffix (before extension)
+            output_path = Path(self.output_path)
+            new_filename = f"{output_path.stem}_{bpm_int}bpm{output_path.suffix}"
+            final_output_path = str(output_path.parent / new_filename)
+
+            # Create processing options with pre-detected BPM to skip redundant detection
             options = ProcessingOptions(
                 silence_threshold_db=self.silence_threshold,
                 trim_silence=self.trim_silence,
+                pre_detected_bpm=bpm,
                 progress_callback=self._on_progress,
             )
 
             # Run pipeline
             pipeline = AcapellaPipeline(options)
-            result = pipeline.process(audio_path, self.output_path)
+            result = pipeline.process(audio_path, final_output_path)
 
             if not self._cancelled:
                 self.finished_ok.emit(result)

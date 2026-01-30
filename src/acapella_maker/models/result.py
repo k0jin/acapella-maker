@@ -13,6 +13,7 @@ class ProcessingOptions:
     trim_silence: bool = True
     fade_in_ms: float = 5.0
     buffer_before_ms: float = 10.0
+    pre_detected_bpm: Optional[float] = None
     progress_callback: Optional[Callable[[str, float], None]] = field(
         default=None, repr=False
     )
