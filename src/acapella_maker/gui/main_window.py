@@ -158,6 +158,7 @@ class MainWindow(QMainWindow):
             input_path=self.input_section.get_input(),
             parent=self,
         )
+        self._worker.bpm_detected.connect(self.progress_section.set_bpm)
         self._connect_worker_signals(self._worker, self._on_bpm_finished)
         self._worker.start()
 

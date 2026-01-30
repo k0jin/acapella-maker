@@ -35,6 +35,7 @@ class ProgressSection(QWidget):
 
         frame = QFrame()
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
+        frame.setAutoFillBackground(True)
         frame_layout = QVBoxLayout(frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)

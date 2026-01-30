@@ -6,7 +6,7 @@ import sys
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator, Optional
+from typing import Callable, Generator, Optional
 
 import yt_dlp
 
@@ -68,12 +68,17 @@ def is_youtube_url(url: str) -> bool:
     return any(re.match(pattern, url) for pattern in YOUTUBE_PATTERNS)
 
 
-def download_audio(url: str, output_dir: Path) -> Path:
+def download_audio(
+    url: str,
+    output_dir: Path,
+    progress_callback: Optional[Callable[[float], None]] = None,
+) -> Path:
     """Download audio from a YouTube URL.
 
     Args:
         url: YouTube URL to download from.
         output_dir: Directory to save the audio file.
+        progress_callback: Optional callback for progress updates (0-100).
 
     Returns:
         Path to the downloaded audio file.
@@ -82,6 +87,20 @@ def download_audio(url: str, output_dir: Path) -> Path:
         YouTubeDownloadError: If download fails.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    def _progress_hook(d: dict) -> None:
+        if progress_callback and d["status"] == "downloading":
+            total = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
+            downloaded = d.get("downloaded_bytes", 0)
+            if total > 0:
+                # Download phase = 70% of total progress
+                progress_callback((downloaded / total) * 70)
+        elif progress_callback and d["status"] == "finished":
+            progress_callback(70)
+
+    def _postprocessor_hook(d: dict) -> None:
+        if progress_callback and d["status"] == "finished":
+            progress_callback(100)
 
     ydl_opts = {
         "format": "bestaudio/best",
@@ -96,6 +115,8 @@ def download_audio(url: str, output_dir: Path) -> Path:
         "quiet": True,
         "no_warnings": True,
         "restrictfilenames": True,
+        "progress_hooks": [_progress_hook],
+        "postprocessor_hooks": [_postprocessor_hook],
     }
 
     # Use bundled FFmpeg if available
@@ -136,11 +157,15 @@ def download_audio(url: str, output_dir: Path) -> Path:
 
 
 @contextmanager
-def youtube_audio(url: str) -> Generator[Path, None, None]:
+def youtube_audio(
+    url: str,
+    progress_callback: Optional[Callable[[float], None]] = None,
+) -> Generator[Path, None, None]:
     """Download YouTube audio, yield path, auto-cleanup.
 
     Args:
         url: YouTube URL to download from.
+        progress_callback: Optional callback for progress updates (0-100).
 
     Yields:
         Path to the downloaded audio file.
@@ -150,6 +175,6 @@ def youtube_audio(url: str) -> Generator[Path, None, None]:
     """
     temp_dir = tempfile.mkdtemp(prefix="acapella_maker_")
     try:
-        yield download_audio(url, Path(temp_dir))
+        yield download_audio(url, Path(temp_dir), progress_callback)
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)

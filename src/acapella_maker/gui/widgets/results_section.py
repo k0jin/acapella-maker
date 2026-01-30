@@ -38,7 +38,11 @@ class ResultsSection(QWidget):
 
         frame = QFrame()
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
-        frame.setStyleSheet("QFrame { background-color: #e8f5e9; }")
+        frame.setAutoFillBackground(True)
+        # Use palette-aware styling for dark mode compatibility
+        frame.setStyleSheet(
+            "QFrame { background-color: palette(alternate-base); }"
+        )
         frame_layout = QVBoxLayout(frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)
