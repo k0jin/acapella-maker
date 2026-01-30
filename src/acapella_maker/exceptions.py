@@ -35,3 +35,9 @@ class SilenceTrimmingError(AcapellaMakerError):
     """Failed to trim silence."""
 
     pass
+
+
+class YouTubeDownloadError(AcapellaMakerError):
+    """Failed to download from YouTube."""
+
+    pass

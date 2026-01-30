@@ -1,7 +1,8 @@
 """Command-line interface for Acapella Maker."""
 
+import shutil
+import tempfile
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -9,8 +10,13 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from acapella_maker import __version__
 from acapella_maker.core.pipeline import AcapellaPipeline
-from acapella_maker.exceptions import AcapellaMakerError
+from acapella_maker.core.youtube import download_audio, is_youtube_url
+from acapella_maker.exceptions import AcapellaMakerError, YouTubeDownloadError
 from acapella_maker.models.result import ProcessingOptions
+
+DOWNLOADS_DIR = Path.home() / "Downloads"
+if not DOWNLOADS_DIR.exists():
+    DOWNLOADS_DIR = Path.cwd()
 
 app = typer.Typer(
     name="acapella-maker",
@@ -27,9 +33,47 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
+def resolve_input_source(input_source: str, console: Console) -> tuple[Path, str | None]:
+    """Resolve input source to a file path, downloading from YouTube if needed.
+
+    Args:
+        input_source: Local file path or YouTube URL.
+        console: Rich console for output.
+
+    Returns:
+        Tuple of (input_file_path, temp_dir_to_cleanup_or_none)
+
+    Raises:
+        typer.Exit: If file not found or not a file.
+        YouTubeDownloadError: If YouTube download fails.
+    """
+    if is_youtube_url(input_source):
+        temp_dir = tempfile.mkdtemp(prefix="acapella_maker_")
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+            transient=True,
+        ) as progress:
+            task = progress.add_task("Downloading from YouTube...", total=None)
+            input_file = download_audio(input_source, Path(temp_dir))
+            progress.remove_task(task)
+        console.print(f"[green]Downloaded:[/green] {input_file.name}")
+        return input_file, temp_dir
+    else:
+        input_file = Path(input_source)
+        if not input_file.exists():
+            console.print(f"[red]Error:[/red] File not found: {input_file}")
+            raise typer.Exit(1)
+        if not input_file.is_file():
+            console.print(f"[red]Error:[/red] Not a file: {input_file}")
+            raise typer.Exit(1)
+        return input_file, None
+
+
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-V",
@@ -44,17 +88,15 @@ def main(
 
 @app.command()
 def extract(
-    input_file: Path = typer.Argument(
+    input_source: str = typer.Argument(
         ...,
-        help="Input audio file (MP3, WAV, FLAC, etc.)",
-        exists=True,
-        readable=True,
+        help="Input audio file path or YouTube URL",
     ),
-    output: Optional[Path] = typer.Option(
+    output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
-        help="Output file path (default: <input>_acapella.wav)",
+        help="Output file path (default: ~/Downloads/<input>_acapella.wav)",
     ),
     silence_threshold: float = typer.Option(
         30.0,
@@ -76,15 +118,22 @@ def extract(
         help="Verbose output",
     ),
 ) -> None:
-    """Extract acapella vocals from an audio file."""
+    """Extract acapella vocals from an audio file or YouTube URL."""
     options = ProcessingOptions(
         silence_threshold_db=silence_threshold,
         trim_silence=not no_trim,
     )
 
     pipeline = AcapellaPipeline(options)
+    temp_dir: str | None = None
 
     try:
+        input_file, temp_dir = resolve_input_source(input_source, console)
+
+        # Set default output to Downloads folder
+        if output is None:
+            output = DOWNLOADS_DIR / f"{input_file.stem}_acapella.wav"
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -119,27 +168,34 @@ def extract(
             console.print(f"[dim]Original duration: {result.original_duration:.1f}s[/dim]")
             console.print(f"[dim]Sample rate: {result.sample_rate}Hz[/dim]")
 
+    except YouTubeDownloadError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        raise typer.Exit(1)
     except AcapellaMakerError as e:
         console.print(f"[red]Error:[/red] {e}")
         raise typer.Exit(1)
     except KeyboardInterrupt:
         console.print("\n[yellow]Cancelled[/yellow]")
         raise typer.Exit(130)
+    finally:
+        if temp_dir is not None:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 @app.command()
 def bpm(
-    input_file: Path = typer.Argument(
+    input_source: str = typer.Argument(
         ...,
-        help="Input audio file",
-        exists=True,
-        readable=True,
+        help="Input audio file path or YouTube URL",
     ),
 ) -> None:
-    """Detect BPM of an audio file."""
+    """Detect BPM of an audio file or YouTube URL."""
     pipeline = AcapellaPipeline()
+    temp_dir: str | None = None
 
     try:
+        input_file, temp_dir = resolve_input_source(input_source, console)
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
@@ -152,9 +208,18 @@ def bpm(
 
         console.print(f"[green]BPM:[/green] {detected_bpm}")
 
+    except YouTubeDownloadError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        raise typer.Exit(1)
     except AcapellaMakerError as e:
         console.print(f"[red]Error:[/red] {e}")
         raise typer.Exit(1)
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Cancelled[/yellow]")
+        raise typer.Exit(130)
+    finally:
+        if temp_dir is not None:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":
