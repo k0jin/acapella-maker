@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "acapella-maker"
+version = "0.1.0"
+description = "Extract acapella vocals from audio files with BPM detection and silence trimming"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+    { name = "Leo" }
+]
+keywords = ["audio", "vocals", "acapella", "demucs", "bpm", "dj", "music"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Multimedia :: Sound/Audio :: Conversion",
+]
+dependencies = [
+    "demucs>=4.0.0",
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    "numpy>=1.24.0",
+    "typer[all]>=0.9.0",
+    "rich>=13.0.0",
+    "certifi>=2023.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+acapella-maker = "acapella_maker.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/acapella_maker"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+]
