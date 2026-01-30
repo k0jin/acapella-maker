@@ -82,6 +82,21 @@ class LoggingConfig:
 
 
 @dataclass
+class ColorsConfig:
+    """UI color configuration using hex codes."""
+
+    # success: str = "#2e7d32"  # Positive states, completion
+    # error: str = "#c62828"  # Error states, invalid input
+    # accent: str = "#1976d2"  # Primary action color (progress bar, buttons)
+    # surface: str = ""  # Elevated backgrounds (empty = system default)
+
+    success: str = "#E5E0DA"  # Positive states, completion
+    error: str = "#c62828"  # Error states, invalid input
+    accent: str = "#B23A3A"  # Primary action color (progress bar, buttons)
+    surface: str = "#6D675C"  # Elevated backgrounds (empty = system default)
+
+
+@dataclass
 class Config:
     """Application configuration."""
 
@@ -89,6 +104,7 @@ class Config:
     output: OutputConfig = field(default_factory=OutputConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     window: WindowConfig = field(default_factory=WindowConfig)
+    colors: ColorsConfig = field(default_factory=ColorsConfig)
 
     def to_dict(self) -> dict:
         """Convert config to dictionary for TOML serialization."""
@@ -117,6 +133,18 @@ class Config:
             result["output"]["default_directory"] = self.output.default_directory
         if self.logging.file is not None:
             result["logging"]["file"] = self.logging.file
+        # Only include non-empty color values
+        colors_dict = {}
+        if self.colors.success:
+            colors_dict["success"] = self.colors.success
+        if self.colors.error:
+            colors_dict["error"] = self.colors.error
+        if self.colors.accent:
+            colors_dict["accent"] = self.colors.accent
+        if self.colors.surface:
+            colors_dict["surface"] = self.colors.surface
+        if colors_dict:
+            result["colors"] = colors_dict
         return result
 
     @classmethod
@@ -126,6 +154,7 @@ class Config:
         output_data = data.get("output", {})
         logging_data = data.get("logging", {})
         window_data = data.get("window", {})
+        colors_data = data.get("colors", {})
 
         return cls(
             audio=AudioConfig(
@@ -149,6 +178,12 @@ class Config:
                 min_height=window_data.get("min_height", 680),
                 default_width=window_data.get("default_width", 520),
                 default_height=window_data.get("default_height", 680),
+            ),
+            colors=ColorsConfig(
+                success=colors_data.get("success", "#2e7d32"),
+                error=colors_data.get("error", "#c62828"),
+                accent=colors_data.get("accent", "#1976d2"),
+                surface=colors_data.get("surface", ""),
             ),
         )
 

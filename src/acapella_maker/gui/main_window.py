@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from acapella_maker.config import get_config
+from acapella_maker.gui.colors import ColorManager
 from acapella_maker.gui.widgets import (
     InputSection,
     OptionsSection,
@@ -29,10 +30,15 @@ from acapella_maker.models.result import ProcessingResult
 class MainWindow(QMainWindow):
     """Main application window."""
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        color_manager: Optional[ColorManager] = None,
+    ) -> None:
         super().__init__(parent)
         self._worker: Optional[Union[ExtractionWorker, BPMWorker]] = None
         self._config = get_config()
+        self._color_manager = color_manager
         self._setup_ui()
         self._connect_signals()
         self._apply_config()
@@ -51,7 +57,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(20, 20, 20, 20)
 
         # Input section
-        self.input_section = InputSection()
+        self.input_section = InputSection(color_manager=self._color_manager)
         layout.addWidget(self.input_section)
 
         # Options section
@@ -80,11 +86,11 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
 
         # Progress section (hidden by default)
-        self.progress_section = ProgressSection()
+        self.progress_section = ProgressSection(color_manager=self._color_manager)
         layout.addWidget(self.progress_section)
 
         # Results section (hidden by default)
-        self.results_section = ResultsSection()
+        self.results_section = ResultsSection(color_manager=self._color_manager)
         layout.addWidget(self.results_section)
 
         layout.addStretch()

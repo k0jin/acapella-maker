@@ -3,7 +3,7 @@
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
@@ -18,15 +18,23 @@ from PySide6.QtWidgets import (
 
 from acapella_maker.models.result import ProcessingResult
 
+if TYPE_CHECKING:
+    from acapella_maker.gui.colors import ColorManager
+
 
 class ResultsSection(QWidget):
     """Widget for displaying processing results."""
 
     process_another = Signal()
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        color_manager: Optional["ColorManager"] = None,
+    ) -> None:
         super().__init__(parent)
         self._output_path: str = ""
+        self._color_manager = color_manager
         self._setup_ui()
         self._connect_signals()
         self.hide()
@@ -39,17 +47,27 @@ class ResultsSection(QWidget):
         frame = QFrame()
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
         frame.setAutoFillBackground(True)
-        # Use palette-aware styling for dark mode compatibility
-        frame.setStyleSheet(
-            "QFrame { background-color: palette(alternate-base); }"
-        )
+        # Use surface color if configured, otherwise use palette-aware styling
+        if self._color_manager and self._color_manager.surface:
+            frame.setStyleSheet(
+                f"QFrame {{ background-color: {self._color_manager.surface}; }}"
+            )
+        else:
+            frame.setStyleSheet(
+                "QFrame { background-color: palette(alternate-base); }"
+            )
         frame_layout = QVBoxLayout(frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)
 
         # Success header
+        success_color = (
+            self._color_manager.success if self._color_manager else "#2e7d32"
+        )
         header = QLabel("Processing Complete!")
-        header.setStyleSheet("font-weight: bold; font-size: 14px; color: #2e7d32;")
+        header.setStyleSheet(
+            f"font-weight: bold; font-size: 14px; color: {success_color};"
+        )
         frame_layout.addWidget(header)
 
         # Results grid

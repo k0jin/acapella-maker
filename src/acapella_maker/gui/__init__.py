@@ -8,6 +8,8 @@ def main():
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QApplication
 
+    from acapella_maker.config import get_config
+    from acapella_maker.gui.colors import ColorManager, build_stylesheet
     from acapella_maker.gui.main_window import MainWindow
 
     # Enable high-DPI scaling
@@ -19,7 +21,14 @@ def main():
     app.setApplicationName("Acapella Maker")
     app.setOrganizationName("AcapellaMaker")
 
-    window = MainWindow()
+    # Set up color manager and apply global stylesheet
+    config = get_config()
+    color_manager = ColorManager(config.colors)
+    stylesheet = build_stylesheet(color_manager)
+    if stylesheet:
+        app.setStyleSheet(stylesheet)
+
+    window = MainWindow(color_manager=color_manager)
     window.show()
 
     sys.exit(app.exec())

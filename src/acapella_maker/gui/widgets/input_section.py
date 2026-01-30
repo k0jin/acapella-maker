@@ -1,7 +1,7 @@
 """Input section widget for file path and YouTube URL."""
 
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDragEnterEvent, QDropEvent
@@ -18,6 +18,9 @@ from PySide6.QtWidgets import (
 
 from acapella_maker.core.youtube import is_youtube_url
 
+if TYPE_CHECKING:
+    from acapella_maker.gui.colors import ColorManager
+
 
 class InputSection(QWidget):
     """Widget for selecting input file or YouTube URL."""
@@ -26,8 +29,13 @@ class InputSection(QWidget):
 
     AUDIO_FILTERS = "Audio Files (*.wav *.mp3 *.flac *.ogg *.m4a *.aac);;All Files (*)"
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        color_manager: Optional["ColorManager"] = None,
+    ) -> None:
         super().__init__(parent)
+        self._color_manager = color_manager
         self._setup_ui()
         self._connect_signals()
         self.setAcceptDrops(True)
@@ -109,12 +117,20 @@ class InputSection(QWidget):
 
         if is_youtube_url(text):
             self.url_status.setText("✓")
-            self.url_status.setStyleSheet("color: green; font-weight: bold;")
+            success_color = (
+                self._color_manager.success if self._color_manager else "#2e7d32"
+            )
+            self.url_status.setStyleSheet(
+                f"color: {success_color}; font-weight: bold;"
+            )
             self.file_edit.clear()
             self.input_changed.emit(text)
         else:
             self.url_status.setText("✗")
-            self.url_status.setStyleSheet("color: red; font-weight: bold;")
+            error_color = (
+                self._color_manager.error if self._color_manager else "#c62828"
+            )
+            self.url_status.setStyleSheet(f"color: {error_color}; font-weight: bold;")
 
     def get_input(self) -> str:
         """Get the current input (file path or YouTube URL)."""

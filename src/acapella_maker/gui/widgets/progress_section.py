@@ -1,6 +1,6 @@
 """Progress section widget for displaying processing progress."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from PySide6.QtCore import QElapsedTimer, QTimer, Signal
 from PySide6.QtWidgets import (
@@ -13,14 +13,22 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+if TYPE_CHECKING:
+    from acapella_maker.gui.colors import ColorManager
+
 
 class ProgressSection(QWidget):
     """Widget for displaying processing progress with cancel button."""
 
     cancel_requested = Signal()
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        color_manager: Optional["ColorManager"] = None,
+    ) -> None:
         super().__init__(parent)
+        self._color_manager = color_manager
         self._elapsed_timer = QElapsedTimer()
         self._update_timer = QTimer(self)
         self._update_timer.timeout.connect(self._update_elapsed)
@@ -36,6 +44,15 @@ class ProgressSection(QWidget):
         frame = QFrame()
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
         frame.setAutoFillBackground(True)
+        # Use surface color if configured, otherwise use palette-aware styling
+        if self._color_manager and self._color_manager.surface:
+            frame.setStyleSheet(
+                f"QFrame {{ background-color: {self._color_manager.surface}; }}"
+            )
+        else:
+            frame.setStyleSheet(
+                "QFrame { background-color: palette(alternate-base); }"
+            )
         frame_layout = QVBoxLayout(frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)
