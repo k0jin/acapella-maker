@@ -44,9 +44,15 @@ dev = [
 build = [
     "pyinstaller>=6.0.0",
 ]
+gui = [
+    "PySide6>=6.5.0",
+]
 
 [project.scripts]
 acapella-maker = "acapella_maker.cli:app"
+
+[project.gui-scripts]
+acapella-maker-gui = "acapella_maker.gui:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/acapella_maker"]

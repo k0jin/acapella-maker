@@ -6,13 +6,13 @@ from typing import Union
 import librosa
 import numpy as np
 
-from acapella_maker.core.audio_io import load_audio
+from acapella_maker.core.audio_io import DEFAULT_SAMPLE_RATE, load_audio
 from acapella_maker.exceptions import BPMDetectionError
 
 
 def detect_bpm(
     audio_or_path: Union[np.ndarray, str, Path],
-    sample_rate: int = 44100,
+    sample_rate: int = DEFAULT_SAMPLE_RATE,
 ) -> float:
     """Detect BPM from audio.
 

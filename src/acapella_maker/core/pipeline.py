@@ -1,7 +1,7 @@
 """Main processing pipeline for acapella extraction."""
 
 from pathlib import Path
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
 from acapella_maker.core.audio_io import get_duration, load_audio, save_audio
 from acapella_maker.core.bpm_detector import detect_bpm
