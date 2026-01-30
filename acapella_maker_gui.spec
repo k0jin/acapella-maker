@@ -89,6 +89,22 @@ binaries += collect_dynamic_libs("PySide6")
 
 # Get spec directory for pathex
 spec_dir = Path(SPECPATH)
+
+# Check for bundled ffmpeg binaries
+ffmpeg_dir = spec_dir / "ffmpeg_bin"
+if ffmpeg_dir.exists():
+    if sys.platform == "win32":
+        ffmpeg_exe = ffmpeg_dir / "ffmpeg.exe"
+        ffprobe_exe = ffmpeg_dir / "ffprobe.exe"
+    else:
+        ffmpeg_exe = ffmpeg_dir / "ffmpeg"
+        ffprobe_exe = ffmpeg_dir / "ffprobe"
+
+    if ffmpeg_exe.exists():
+        binaries.append((str(ffmpeg_exe), "."))
+    if ffprobe_exe.exists():
+        binaries.append((str(ffprobe_exe), "."))
+
 src_dir = spec_dir / "src"
 
 a = Analysis(

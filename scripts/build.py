@@ -316,16 +316,16 @@ def main() -> int:
         print("\n=== Building GUI App ===")
         run_pyinstaller(gui_spec_file)
 
+    # Cleanup ffmpeg_bin directory (after both builds complete)
+    if ffmpeg_dir.exists():
+        shutil.rmtree(ffmpeg_dir)
+
     # Create CLI archive
     if build_cli:
         print("\n=== Creating CLI Archive ===")
         plat_name = {"darwin": "macos", "linux": "linux", "win32": "windows"}[plat]
         output_name = args.output_name or f"acapella-maker-{plat_name}"
         archive_path = create_archive(dist_dir, output_name)
-
-    # Cleanup ffmpeg_bin directory
-    if ffmpeg_dir.exists():
-        shutil.rmtree(ffmpeg_dir)
 
     print("\n=== Build Complete ===")
     if build_cli:
