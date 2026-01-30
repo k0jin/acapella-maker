@@ -104,3 +104,21 @@ class OptionsSection(QWidget):
         self.threshold_slider.setEnabled(enabled)
         self.threshold_spin.setEnabled(enabled)
         self.trim_checkbox.setEnabled(enabled)
+
+    def set_silence_threshold(self, value: float) -> None:
+        """Set the silence threshold value.
+
+        Args:
+            value: Threshold in dB (0-100).
+        """
+        int_value = int(value)
+        self.threshold_slider.setValue(int_value)
+        self.threshold_spin.setValue(int_value)
+
+    def set_trim_silence(self, enabled: bool) -> None:
+        """Set whether to trim leading silence.
+
+        Args:
+            enabled: True to enable trimming.
+        """
+        self.trim_checkbox.setChecked(enabled)

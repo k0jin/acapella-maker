@@ -14,6 +14,9 @@ os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 
 from acapella_maker.core.audio_io import DEFAULT_SAMPLE_RATE, load_audio
 from acapella_maker.exceptions import VocalExtractionError
+from acapella_maker.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def _prepare_audio(
@@ -139,22 +142,28 @@ def extract_vocals(
         from demucs.pretrained import get_model
 
         # Load the htdemucs model (best quality)
+        logger.info("Loading Demucs htdemucs model")
         model = get_model("htdemucs")
         model.eval()
 
         # Use GPU if available
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        logger.info("Using device: %s", device)
         model.to(device)
 
         # Prepare audio
+        logger.debug("Preparing audio for model (target sample rate: %d)", model.samplerate)
         audio, sample_rate = _prepare_audio(audio_or_path, sample_rate, model.samplerate)
 
         # Extract vocals
+        logger.debug("Running Demucs model")
         vocals = _run_demucs_model(audio, model, device)
 
         # Resample to default output rate
+        logger.debug("Resampling output to %d Hz", DEFAULT_SAMPLE_RATE)
         vocals, sample_rate = _resample_output(vocals, sample_rate, DEFAULT_SAMPLE_RATE)
 
+        logger.info("Vocal extraction successful")
         return vocals, sample_rate
 
     except VocalExtractionError:

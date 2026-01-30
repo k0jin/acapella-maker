@@ -1,5 +1,6 @@
 """Main application window for Acapella Maker GUI."""
 
+from pathlib import Path
 from typing import Callable, Optional, Union
 
 from PySide6.QtCore import Qt
@@ -13,6 +14,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from acapella_maker.config import get_config
 from acapella_maker.gui.widgets import (
     InputSection,
     OptionsSection,
@@ -30,14 +32,17 @@ class MainWindow(QMainWindow):
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self._worker: Optional[Union[ExtractionWorker, BPMWorker]] = None
+        self._config = get_config()
         self._setup_ui()
         self._connect_signals()
+        self._apply_config()
         self._update_button_state()
 
     def _setup_ui(self) -> None:
         """Set up the user interface components."""
         self.setWindowTitle("Acapella Maker")
-        self.setMinimumSize(600, 500)
+        self.setMinimumSize(self._config.window.min_width, self._config.window.min_height)
+        self.resize(self._config.window.default_width, self._config.window.default_height)
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -53,8 +58,10 @@ class MainWindow(QMainWindow):
         self.options_section = OptionsSection()
         layout.addWidget(self.options_section)
 
-        # Output section
-        self.output_section = OutputSection()
+        # Output section (pass config-based default directory getter)
+        self.output_section = OutputSection(
+            default_dir_getter=lambda: self._config.output.get_default_directory()
+        )
         layout.addWidget(self.output_section)
 
         # Action buttons
@@ -81,6 +88,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.results_section)
 
         layout.addStretch()
+
+    def _apply_config(self) -> None:
+        """Apply configuration values to UI widgets."""
+        self.options_section.set_silence_threshold(self._config.audio.silence_threshold_db)
+        self.options_section.set_trim_silence(self._config.audio.trim_silence)
 
     def _connect_signals(self) -> None:
         """Connect widget signals to handlers."""

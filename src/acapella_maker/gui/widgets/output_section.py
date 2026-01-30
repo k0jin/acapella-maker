@@ -1,7 +1,7 @@
 """Output section widget for output path selection."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
@@ -21,8 +21,13 @@ class OutputSection(QWidget):
 
     output_changed = Signal(str)
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        default_dir_getter: Optional[Callable[[], Path]] = None,
+    ) -> None:
         super().__init__(parent)
+        self._default_dir_getter = default_dir_getter
         self._setup_ui()
         self._connect_signals()
 
@@ -71,7 +76,9 @@ class OutputSection(QWidget):
             self.output_edit.setText(file_path)
 
     def _default_dir(self) -> Path:
-        """Get default output directory (~/Downloads or home)."""
+        """Get default output directory from config or fallback."""
+        if self._default_dir_getter:
+            return self._default_dir_getter()
         downloads = Path.home() / "Downloads"
         if downloads.exists():
             return downloads

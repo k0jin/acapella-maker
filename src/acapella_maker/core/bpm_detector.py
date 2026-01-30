@@ -8,6 +8,9 @@ import numpy as np
 
 from acapella_maker.core.audio_io import DEFAULT_SAMPLE_RATE, load_audio
 from acapella_maker.exceptions import BPMDetectionError
+from acapella_maker.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def detect_bpm(
@@ -29,6 +32,7 @@ def detect_bpm(
     try:
         # Load audio if path provided
         if isinstance(audio_or_path, (str, Path)):
+            logger.debug("Loading audio from %s", audio_or_path)
             audio, sample_rate = load_audio(audio_or_path, mono=True)
         else:
             audio = audio_or_path
@@ -37,6 +41,7 @@ def detect_bpm(
                 audio = librosa.to_mono(audio)
 
         # Detect tempo using librosa's beat tracker
+        logger.debug("Running beat detection at %d Hz", sample_rate)
         tempo, _ = librosa.beat.beat_track(y=audio, sr=sample_rate)
 
         # Handle both scalar and array returns (librosa version differences)
@@ -48,6 +53,7 @@ def detect_bpm(
         if tempo <= 0:
             raise BPMDetectionError("Could not detect valid BPM")
 
+        logger.info("Detected BPM: %.1f", round(tempo, 1))
         return round(tempo, 1)
 
     except BPMDetectionError:

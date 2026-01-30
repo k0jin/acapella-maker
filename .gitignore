@@ -17,3 +17,7 @@ ffmpeg_bin/
 
 # Design documentation (local only)
 DESIGN.md
+
+# Coverage
+.coverage
+htmlcov/
