@@ -119,20 +119,20 @@ class InputSection(QWidget):
 
         if is_youtube_url(text):
             self.url_status.setText("✓")
-            success_color = (
-                self._color_manager.success if self._color_manager else "#2e7d32"
+            valid_color = (
+                self._color_manager.valid_input if self._color_manager else "#2e7d32"
             )
             self.url_status.setStyleSheet(
-                f"color: {success_color}; font-weight: bold;"
+                f"color: {valid_color}; font-weight: bold;"
             )
             self.file_edit.clear()
             self.input_changed.emit(text)
         else:
             self.url_status.setText("✗")
-            error_color = (
-                self._color_manager.error if self._color_manager else "#c62828"
+            invalid_color = (
+                self._color_manager.invalid_input if self._color_manager else "#c62828"
             )
-            self.url_status.setStyleSheet(f"color: {error_color}; font-weight: bold;")
+            self.url_status.setStyleSheet(f"color: {invalid_color}; font-weight: bold;")
 
     def get_input(self) -> str:
         """Get the current input (file path or YouTube URL)."""

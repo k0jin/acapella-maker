@@ -90,12 +90,12 @@ class ColorsConfig:
     # accent: str = "#1976d2"  # Primary action color (progress bar, buttons)
     # surface: str = ""  # Elevated backgrounds (empty = system default)
 
-    success: str = "#E5E0DA"  # Positive states, completion
-    error: str = "#c62828"  # Error states, invalid input
-    accent: str = "#B23A3A"  # Primary action color (progress bar, buttons)
-    surface: str = "#6D675C"  # Elevated backgrounds (empty = system default)
-    background: str = "#E5E0DA"  # Main window background (empty = system default)
-    button: str = "#89847F"  # Button background color (empty = system default)
+    valid_input: str = "#E5E0DA"  # Checkmark color for valid YouTube URL
+    invalid_input: str = "#c62828"  # X mark color for invalid input
+    progress_bar: str = "#B23A3A"  # Progress bar chunk color
+    panel_background: str = "#E5E0DA"  # QGroupBox/QFrame backgrounds
+    window_background: str = "#6D675C" # Main window background
+    button_background: str = "#89847F"  # Button background color
 
 
 @dataclass
@@ -137,18 +137,18 @@ class Config:
             result["logging"]["file"] = self.logging.file
         # Only include non-empty color values
         colors_dict = {}
-        if self.colors.success:
-            colors_dict["success"] = self.colors.success
-        if self.colors.error:
-            colors_dict["error"] = self.colors.error
-        if self.colors.accent:
-            colors_dict["accent"] = self.colors.accent
-        if self.colors.surface:
-            colors_dict["surface"] = self.colors.surface
-        if self.colors.background:
-            colors_dict["background"] = self.colors.background
-        if self.colors.button:
-            colors_dict["button"] = self.colors.button
+        if self.colors.valid_input:
+            colors_dict["valid_input"] = self.colors.valid_input
+        if self.colors.invalid_input:
+            colors_dict["invalid_input"] = self.colors.invalid_input
+        if self.colors.progress_bar:
+            colors_dict["progress_bar"] = self.colors.progress_bar
+        if self.colors.panel_background:
+            colors_dict["panel_background"] = self.colors.panel_background
+        if self.colors.window_background:
+            colors_dict["window_background"] = self.colors.window_background
+        if self.colors.button_background:
+            colors_dict["button_background"] = self.colors.button_background
         if colors_dict:
             result["colors"] = colors_dict
         return result
@@ -186,12 +186,12 @@ class Config:
                 default_height=window_data.get("default_height", 680),
             ),
             colors=ColorsConfig(
-                success=colors_data.get("success", "#2e7d32"),
-                error=colors_data.get("error", "#c62828"),
-                accent=colors_data.get("accent", "#1976d2"),
-                surface=colors_data.get("surface", ""),
-                background=colors_data.get("background", ""),
-                button=colors_data.get("button", ""),
+                valid_input=colors_data.get("valid_input", "#2e7d32"),
+                invalid_input=colors_data.get("invalid_input", "#c62828"),
+                progress_bar=colors_data.get("progress_bar", "#1976d2"),
+                panel_background=colors_data.get("panel_background", ""),
+                window_background=colors_data.get("window_background", ""),
+                button_background=colors_data.get("button_background", ""),
             ),
         )
 

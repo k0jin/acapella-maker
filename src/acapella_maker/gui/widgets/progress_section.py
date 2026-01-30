@@ -44,10 +44,10 @@ class ProgressSection(QWidget):
         frame = QFrame()
         frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
         frame.setAutoFillBackground(True)
-        # Use surface color if configured, otherwise use palette-aware styling
-        if self._color_manager and self._color_manager.surface:
+        # Use panel background color if configured, otherwise use palette-aware styling
+        if self._color_manager and self._color_manager.panel_background:
             frame.setStyleSheet(
-                f"QFrame {{ background-color: {self._color_manager.surface}; }}"
+                f"QFrame {{ background-color: {self._color_manager.panel_background}; }}"
             )
         else:
             frame.setStyleSheet(
