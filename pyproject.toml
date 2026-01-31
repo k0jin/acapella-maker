@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "acapella-maker"
 version = "0.1.0"
-description = "Extract acapella vocals from audio files with BPM detection and silence trimming"
+description = "Extract + download acapella samples from YouTube with local stem splitting"
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [

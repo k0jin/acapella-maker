@@ -1,10 +1,10 @@
 # Acapella Maker
 
-Extract acapella vocals from audio files using AI-powered source separation.
+Extract + download acapella samples from YouTube with local stem splitting.
 
 ## Features
 
-- **AI-Powered Vocal Extraction** - Uses Demucs deep learning model for high-quality vocal isolation
+- **Local AI Stem Splitting** - Uses Demucs deep learning model for high-quality vocal isolation
 - **YouTube Download** - Download and extract vocals directly from YouTube URLs
 - **BPM Detection** - Automatic tempo detection for DJ-friendly exports
 - **Silence Trimming** - Configurable automatic removal of leading/trailing silence
