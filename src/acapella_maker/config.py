@@ -90,14 +90,28 @@ class ColorsConfig:
     # accent: str = "#1976d2"  # Primary action color (progress bar, buttons)
     # surface: str = ""  # Elevated backgrounds (empty = system default)
 
+    # valid_input: str = "#E5E0DA"  # Checkmark color for valid YouTube URL
+    # invalid_input: str = "#c62828"  # X mark color for invalid input
+    # progress_bar: str = "#B23A3A"  # Progress bar chunk color
+    # panel_background: str = "#E5E0DA"  # QGroupBox/QFrame backgrounds
+    # window_background: str = "#6D675C" # Main window background
+    # button_background: str = "#89847F"  # Button background color
+    # header_text: str = "#B23A3A"   # Section header text color
+    # panel_text: str = "#6D675C"  # In-panel text color
+
     valid_input: str = "#E5E0DA"  # Checkmark color for valid YouTube URL
     invalid_input: str = "#c62828"  # X mark color for invalid input
-    progress_bar: str = "#B23A3A"  # Progress bar chunk color
-    panel_background: str = "#E5E0DA"  # QGroupBox/QFrame backgrounds
-    window_background: str = "#6D675C" # Main window background
-    button_background: str = "#89847F"  # Button background color
-    header_text: str = "#B23A3A"   # Section header text color
-    panel_text: str = "#6D675C"  # In-panel text color
+
+    progress_bar: str = "#FF5C8A"  # Progress bar chunk color
+
+    # panel_background: str = "#2A2726"  # QGroupBox/QFrame backgrounds
+    panel_background: str = "#2A2726"   # QGroupBox/QFrame backgrounds
+    window_background: str = "#3F3E41"  # Main window background
+    button_background: str = "#151516"  # Button background color
+
+    header_text: str = "#E29A4A"   # Section header text color
+    panel_text: str = "#E29A4A"  # In-panel text color
+
 
 
 @dataclass

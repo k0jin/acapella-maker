@@ -107,13 +107,19 @@ if [[ "$GUI_ONLY" == true && "$CLI_ONLY" == true ]]; then
     exit 1
 fi
 
+# Warn if skipping deps but ffmpeg_bin doesn't exist
+if [[ "$SKIP_DEPS" == true && ! -d "$SCRIPT_DIR/ffmpeg_bin" ]]; then
+    log_warn "ffmpeg_bin/ not found. FFmpeg will NOT be bundled!"
+    log_warn "Run without --skip-deps first to download FFmpeg."
+fi
+
 # Change to project directory
 cd "$SCRIPT_DIR"
 
-# Clean build artifacts
+# Clean build artifacts (preserve ffmpeg_bin for caching)
 if [[ "$CLEAN" == true ]]; then
     log_info "Cleaning build artifacts..."
-    rm -rf dist build ffmpeg_bin
+    rm -rf dist build
     log_success "Clean complete"
 fi
 

@@ -372,10 +372,6 @@ def main() -> int:
         print("\n=== Building GUI App ===")
         run_pyinstaller(gui_spec_file)
 
-    # Cleanup ffmpeg_bin directory (after both builds complete)
-    if ffmpeg_dir.exists():
-        shutil.rmtree(ffmpeg_dir)
-
     # Create CLI archive
     if build_cli:
         print("\n=== Creating CLI Archive ===")
