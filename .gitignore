@@ -15,6 +15,7 @@ ffmpeg_bin/
 
 # Local Claude agents
 .agents/
+.claude/
 
 # Design documentation (local only)
 DESIGN.md

@@ -1,6 +1,21 @@
 # Acapella Maker
 
-Extract acapella vocals from audio files with BPM detection and silence trimming.
+Extract acapella vocals from audio files using AI-powered source separation.
+
+## Features
+
+- **AI-Powered Vocal Extraction** - Uses Demucs deep learning model for high-quality vocal isolation
+- **YouTube Download** - Download and extract vocals directly from YouTube URLs
+- **BPM Detection** - Automatic tempo detection for DJ-friendly exports
+- **Silence Trimming** - Configurable automatic removal of leading/trailing silence
+- **GUI & CLI** - Full-featured graphical interface and command-line tool
+- **Cross-Platform** - Works on macOS, Windows, and Linux
+
+## Requirements
+
+- Python 3.9+
+- ffmpeg
+- libsndfile
 
 ## Installation
 
@@ -12,8 +27,6 @@ With GUI support:
 ```bash
 pip install -e ".[gui]"
 ```
-
-**System requirements:** ffmpeg, libsndfile
 
 ## Usage
 
@@ -31,8 +44,11 @@ python -m acapella_maker.gui
 ### Command Line
 
 ```bash
-# Extract vocals
+# Extract vocals from a local file
 acapella-maker extract song.mp3
+
+# Extract vocals from YouTube
+acapella-maker extract "https://youtube.com/watch?v=..."
 
 # With options
 acapella-maker extract song.mp3 -o vocals.wav --silence-threshold 40
@@ -56,7 +72,10 @@ Build a standalone application using PyInstaller:
 # Install build dependencies
 pip install -e ".[gui,build]"
 
-# Build the app
+# Build the app (macOS/Linux)
+./build.sh
+
+# Or manually with PyInstaller
 pyinstaller acapella_maker_gui.spec
 ```
 

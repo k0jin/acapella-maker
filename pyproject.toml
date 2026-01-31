@@ -8,16 +8,14 @@ version = "0.1.0"
 description = "Extract acapella vocals from audio files with BPM detection and silence trimming"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "MIT"
 authors = [
-    { name = "Leo" }
+    { name = "kojin" }
 ]
 keywords = ["audio", "vocals", "acapella", "demucs", "bpm", "dj", "music"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
