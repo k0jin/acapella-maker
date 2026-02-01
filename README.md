@@ -1,10 +1,9 @@
 # Acapella Maker
 
-<img width="256" height="256" alt="icon" src="https://github.com/user-attachments/assets/9de7b8a6-22a4-41db-9b33-417185aff673" />
+<img width="256" height="256" alt="icon" src="https://github.com/user-attachments/assets/9de7b8a6-22a4-41db-9b33-417185aff673" /> <img width="256" height="256" alt="Screenshot 2026-01-30 at 10 44 11 PM" src="https://github.com/user-attachments/assets/d2607a98-4f0a-43e9-b768-73b14025ae73" />
 
 Extract + download + prepare acapella samples from YouTube with local stem splitting, BPM detection, and silence trimming 
 
-<img width="256" height="256" alt="Screenshot 2026-01-30 at 10 44 11 PM" src="https://github.com/user-attachments/assets/d2607a98-4f0a-43e9-b768-73b14025ae73" />
 
 
 ## Features
