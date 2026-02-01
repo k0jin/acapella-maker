@@ -66,6 +66,7 @@ hidden_imports = [
 # Collect all submodules for complex packages
 hidden_imports += collect_submodules("demucs")
 hidden_imports += collect_submodules("yt_dlp")
+hidden_imports += collect_submodules("rich")
 
 # Collect data files
 datas = []
@@ -86,6 +87,9 @@ except ImportError:
 
 # Collect torch data files (needed for proper operation)
 datas += collect_data_files("torch")
+
+# Collect rich data files (unicode data for terminal rendering)
+datas += collect_data_files("rich")
 
 # Bundle pre-downloaded demucs models
 datas += find_demucs_models()
@@ -157,6 +161,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon="src/acapella_maker/gui/icon.ico" if sys.platform == "win32" else None,
 )
 
 coll = COLLECT(

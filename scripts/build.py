@@ -362,7 +362,7 @@ def main() -> int:
     plat = get_platform()
 
     build_cli = not args.gui_only
-    build_gui = not args.cli_only and plat == "darwin"  # GUI .app only on macOS
+    build_gui = not args.cli_only  # Build GUI on all platforms
 
     if build_cli and not cli_spec_file.exists():
         print(f"Error: CLI spec file not found: {cli_spec_file}")

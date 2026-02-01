@@ -95,8 +95,9 @@ def get_default_output_dir() -> Path:
     return config.output.get_default_directory()
 
 
-@app.callback()
+@app.callback(invoke_without_command=True)
 def main(
+    ctx: typer.Context,
     version: bool | None = typer.Option(
         None,
         "--version",
@@ -118,6 +119,11 @@ def main(
     ),
 ) -> None:
     """Acapella Maker - Extract vocals from audio files."""
+    # Show help if no command provided
+    if ctx.invoked_subcommand is None:
+        console.print(ctx.get_help())
+        raise typer.Exit(0)
+
     # Load config and set up logging
     config = get_config()
 

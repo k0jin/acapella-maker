@@ -76,11 +76,17 @@ hiddenimports += collect_submodules("demucs")
 # Collect all yt_dlp submodules
 hiddenimports += collect_submodules("yt_dlp")
 
+# Collect all rich submodules (for unicode data)
+hiddenimports += collect_submodules("rich")
+
 # Collect PySide6 data files (plugins, etc.)
 datas += collect_data_files("PySide6")
 
 # Collect torch data files
 datas += collect_data_files("torch")
+
+# Collect rich data files (unicode data)
+datas += collect_data_files("rich")
 
 # Include certifi certificates
 import certifi
@@ -156,6 +162,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon="src/acapella_maker/gui/icon.ico" if sys.platform == "win32" else None,
 )
 
 coll = COLLECT(
