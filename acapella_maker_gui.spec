@@ -25,7 +25,8 @@ def find_demucs_models():
     cache_dir = Path.home() / ".cache" / "torch" / "hub" / "checkpoints"
     if cache_dir.exists():
         for model_file in cache_dir.glob("*.th"):
-            model_paths.append((str(model_file), "torch_cache"))
+            # Bundle to hub/checkpoints/ so TORCH_HOME can find them
+            model_paths.append((str(model_file), "hub/checkpoints"))
 
     return model_paths
 
@@ -84,6 +85,9 @@ datas += collect_data_files("torch")
 # Include certifi certificates
 import certifi
 datas.append((certifi.where(), "certifi"))
+
+# Bundle pre-downloaded demucs models
+datas += find_demucs_models()
 
 # Collect PySide6 binaries/dynamic libs
 binaries = []

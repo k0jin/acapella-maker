@@ -1,6 +1,7 @@
 """Vocal extraction using Demucs."""
 
 import os
+import sys
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -11,6 +12,13 @@ import torch
 # Fix SSL certificate issues on macOS (must be set before demucs imports)
 os.environ["SSL_CERT_FILE"] = certifi.where()
 os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
+
+# When running as a bundled app, use bundled model cache
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    _bundle_dir = Path(sys._MEIPASS)
+    # Models are bundled in hub/checkpoints/, set TORCH_HOME so torch finds them
+    if (_bundle_dir / "hub" / "checkpoints").exists():
+        os.environ["TORCH_HOME"] = str(_bundle_dir)
 
 from acapella_maker.core.audio_io import DEFAULT_SAMPLE_RATE, load_audio
 from acapella_maker.exceptions import VocalExtractionError

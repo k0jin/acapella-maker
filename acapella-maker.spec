@@ -11,6 +11,18 @@ from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 spec_dir = Path(SPECPATH)
 src_dir = spec_dir / "src"
 
+
+def find_demucs_models():
+    """Find demucs pretrained model files."""
+    model_paths = []
+    # Models are cached in ~/.cache/torch/hub/checkpoints
+    cache_dir = Path.home() / ".cache" / "torch" / "hub" / "checkpoints"
+    if cache_dir.exists():
+        for model_file in cache_dir.glob("*.th"):
+            # Bundle to hub/checkpoints/ so TORCH_HOME can find them
+            model_paths.append((str(model_file), "hub/checkpoints"))
+    return model_paths
+
 # Collect hidden imports for PyTorch and demucs
 hidden_imports = [
     # PyTorch
@@ -74,6 +86,9 @@ except ImportError:
 
 # Collect torch data files (needed for proper operation)
 datas += collect_data_files("torch")
+
+# Bundle pre-downloaded demucs models
+datas += find_demucs_models()
 
 # Binaries - ffmpeg will be added by build script
 binaries = []
