@@ -163,6 +163,7 @@ def temp_config_dir(tmp_path: Path, monkeypatch):
     )
     # Reset cached config
     import acapella_maker.config as config_module
+
     config_module._config = None
 
     return config_dir

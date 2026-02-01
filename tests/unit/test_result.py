@@ -69,7 +69,9 @@ class TestProcessingResult:
             sample_rate=44100,
         )
 
-    def test_result_stores_all_fields(self, sample_result: ProcessingResult, tmp_path: Path):
+    def test_result_stores_all_fields(
+        self, sample_result: ProcessingResult, tmp_path: Path
+    ):
         """Test that all fields are stored correctly."""
         assert sample_result.input_path == tmp_path / "input.wav"
         assert sample_result.output_path == tmp_path / "output.wav"

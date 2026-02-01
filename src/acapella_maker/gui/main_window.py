@@ -47,8 +47,12 @@ class MainWindow(QMainWindow):
     def _setup_ui(self) -> None:
         """Set up the user interface components."""
         self.setWindowTitle("Acapella Maker")
-        self.setMinimumSize(self._config.window.min_width, self._config.window.min_height)
-        self.resize(self._config.window.default_width, self._config.window.default_height)
+        self.setMinimumSize(
+            self._config.window.min_width, self._config.window.min_height
+        )
+        self.resize(
+            self._config.window.default_width, self._config.window.default_height
+        )
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -97,7 +101,9 @@ class MainWindow(QMainWindow):
 
     def _apply_config(self) -> None:
         """Apply configuration values to UI widgets."""
-        self.options_section.set_silence_threshold(self._config.audio.silence_threshold_db)
+        self.options_section.set_silence_threshold(
+            self._config.audio.silence_threshold_db
+        )
         self.options_section.set_trim_silence(self._config.audio.trim_silence)
 
     def _connect_signals(self) -> None:
@@ -165,7 +171,9 @@ class MainWindow(QMainWindow):
         """Start BPM-only detection."""
         if not self.input_section.is_valid():
             QMessageBox.warning(
-                self, "Invalid Input", "Please select a valid audio file or YouTube URL."
+                self,
+                "Invalid Input",
+                "Please select a valid audio file or YouTube URL.",
             )
             return
 
@@ -188,7 +196,9 @@ class MainWindow(QMainWindow):
         """
         if not self.input_section.is_valid():
             QMessageBox.warning(
-                self, "Invalid Input", "Please select a valid audio file or YouTube URL."
+                self,
+                "Invalid Input",
+                "Please select a valid audio file or YouTube URL.",
             )
             return False
 
@@ -233,7 +243,9 @@ class MainWindow(QMainWindow):
     def _on_error(self, message: str) -> None:
         """Handle processing error."""
         self.progress_section.reset()
-        QMessageBox.critical(self, "Processing Error", f"An error occurred:\n\n{message}")
+        QMessageBox.critical(
+            self, "Processing Error", f"An error occurred:\n\n{message}"
+        )
 
     def _on_worker_done(self) -> None:
         """Handle worker thread completion."""

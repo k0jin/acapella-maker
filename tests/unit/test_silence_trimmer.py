@@ -156,7 +156,9 @@ class TestTrimSilenceEdgeCases:
         t = np.linspace(0, 0.5, samples // 2, endpoint=False)
 
         left = np.concatenate([silence, np.sin(2 * np.pi * 440 * t).astype(np.float32)])
-        right = np.concatenate([silence, np.sin(2 * np.pi * 880 * t).astype(np.float32)])
+        right = np.concatenate(
+            [silence, np.sin(2 * np.pi * 880 * t).astype(np.float32)]
+        )
 
         stereo = np.stack([left, right], axis=0)
 

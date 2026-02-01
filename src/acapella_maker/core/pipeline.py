@@ -76,7 +76,10 @@ class AcapellaPipeline:
 
         # Step 3: Trim leading silence (if enabled)
         if self.options.trim_silence:
-            logger.debug("Trimming silence with threshold %.1f dB", self.options.silence_threshold_db)
+            logger.debug(
+                "Trimming silence with threshold %.1f dB",
+                self.options.silence_threshold_db,
+            )
             self._report_progress("Trimming silence", 0)
             vocals, trimmed_ms = trim_silence(
                 vocals,
@@ -96,7 +99,9 @@ class AcapellaPipeline:
         save_audio(vocals, output_path, sample_rate)
         self._report_progress("Saving", 100)
 
-        logger.info("Pipeline complete: %.1fs audio at %d Hz", trimmed_duration, sample_rate)
+        logger.info(
+            "Pipeline complete: %.1fs audio at %d Hz", trimmed_duration, sample_rate
+        )
         return ProcessingResult(
             input_path=input_path,
             output_path=output_path,

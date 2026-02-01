@@ -53,9 +53,7 @@ class ResultsSection(QWidget):
                 f"QFrame {{ background-color: {self._color_manager.panel_background}; }}"
             )
         else:
-            frame.setStyleSheet(
-                "QFrame { background-color: palette(alternate-base); }"
-            )
+            frame.setStyleSheet("QFrame { background-color: palette(alternate-base); }")
         frame_layout = QVBoxLayout(frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)

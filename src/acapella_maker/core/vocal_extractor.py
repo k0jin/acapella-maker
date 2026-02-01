@@ -53,12 +53,18 @@ def _prepare_audio(
         # Resample if needed
         if sample_rate != model_samplerate:
             if audio.ndim == 1:
-                audio = librosa.resample(audio, orig_sr=sample_rate, target_sr=model_samplerate)
+                audio = librosa.resample(
+                    audio, orig_sr=sample_rate, target_sr=model_samplerate
+                )
             else:
-                audio = np.array([
-                    librosa.resample(ch, orig_sr=sample_rate, target_sr=model_samplerate)
-                    for ch in audio
-                ])
+                audio = np.array(
+                    [
+                        librosa.resample(
+                            ch, orig_sr=sample_rate, target_sr=model_samplerate
+                        )
+                        for ch in audio
+                    ]
+                )
             sample_rate = model_samplerate
 
     # Ensure stereo format (channels, samples)
@@ -123,10 +129,12 @@ def _resample_output(
 
     import librosa
 
-    vocals = np.array([
-        librosa.resample(ch, orig_sr=current_rate, target_sr=target_rate)
-        for ch in vocals
-    ])
+    vocals = np.array(
+        [
+            librosa.resample(ch, orig_sr=current_rate, target_sr=target_rate)
+            for ch in vocals
+        ]
+    )
     return vocals, target_rate
 
 
@@ -160,8 +168,12 @@ def extract_vocals(
         model.to(device)
 
         # Prepare audio
-        logger.debug("Preparing audio for model (target sample rate: %d)", model.samplerate)
-        audio, sample_rate = _prepare_audio(audio_or_path, sample_rate, model.samplerate)
+        logger.debug(
+            "Preparing audio for model (target sample rate: %d)", model.samplerate
+        )
+        audio, sample_rate = _prepare_audio(
+            audio_or_path, sample_rate, model.samplerate
+        )
 
         # Extract vocals
         logger.debug("Running Demucs model")

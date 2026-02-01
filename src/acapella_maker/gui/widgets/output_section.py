@@ -45,7 +45,9 @@ class OutputSection(QWidget):
         output_layout = QHBoxLayout()
         output_label = QLabel("Save to:")
         output_label.setFixedWidth(80)
-        output_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        output_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
         self.output_edit = QLineEdit()
         self.output_edit.setPlaceholderText("Output file path...")
         self.browse_btn = QPushButton("Browse...")

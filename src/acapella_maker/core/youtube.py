@@ -27,7 +27,9 @@ def _get_ffmpeg_location() -> Optional[str]:
     # Check PyInstaller bundle directory
     if getattr(sys, "frozen", False):
         bundle_dir = Path(sys._MEIPASS)
-        ffmpeg_path = bundle_dir / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+        ffmpeg_path = bundle_dir / (
+            "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
+        )
         if ffmpeg_path.exists():
             return str(bundle_dir)
 
@@ -37,7 +39,9 @@ def _get_ffmpeg_location() -> Optional[str]:
     for parent in current.parents:
         ffmpeg_bin = parent / "ffmpeg_bin"
         if ffmpeg_bin.exists():
-            ffmpeg_path = ffmpeg_bin / ("ffmpeg.exe" if sys.platform == "win32" else "ffmpeg")
+            ffmpeg_path = ffmpeg_bin / (
+                "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
+            )
             if ffmpeg_path.exists():
                 return str(ffmpeg_bin)
 
@@ -46,6 +50,7 @@ def _get_ffmpeg_location() -> Optional[str]:
         return None  # yt-dlp will find it automatically
 
     return None
+
 
 YOUTUBE_PATTERNS = [
     r"^https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+",
@@ -140,7 +145,9 @@ def download_audio(
                     output_path = wav_files[0]
                 else:
                     all_files = list(output_dir.iterdir())
-                    files_found = [f.name for f in all_files] if all_files else ["(none)"]
+                    files_found = (
+                        [f.name for f in all_files] if all_files else ["(none)"]
+                    )
                     raise YouTubeDownloadError(
                         f"Downloaded file not found at expected path: {output_path}. "
                         f"Files in directory: {', '.join(files_found)}"

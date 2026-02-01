@@ -36,7 +36,9 @@ class TestDetectBPM:
             # Pure tone has no rhythm - this is acceptable
             pass
 
-    def test_detect_bpm_from_stereo_array(self, stereo_audio: np.ndarray, sample_rate: int):
+    def test_detect_bpm_from_stereo_array(
+        self, stereo_audio: np.ndarray, sample_rate: int
+    ):
         """Test BPM detection from stereo audio array (converts to mono)."""
         try:
             bpm = detect_bpm(stereo_audio, sample_rate)
@@ -65,7 +67,9 @@ class TestDetectBPM:
         bpm = detect_bpm(audio, sample_rate)
         assert bpm == round(bpm, 1)
 
-    def test_detect_bpm_silent_audio_raises_error(self, silent_audio: np.ndarray, sample_rate: int):
+    def test_detect_bpm_silent_audio_raises_error(
+        self, silent_audio: np.ndarray, sample_rate: int
+    ):
         """Test that completely silent audio raises BPMDetectionError."""
         # Silent audio may return 0 BPM which should raise an error
         # or it may detect some BPM from noise - either is acceptable
@@ -107,7 +111,9 @@ class TestBPMDetectionWithRhythm:
 
         return audio
 
-    def test_detect_bpm_rhythmic_audio(self, rhythmic_audio: np.ndarray, sample_rate: int):
+    def test_detect_bpm_rhythmic_audio(
+        self, rhythmic_audio: np.ndarray, sample_rate: int
+    ):
         """Test BPM detection on audio with clear rhythm."""
         bpm = detect_bpm(rhythmic_audio, sample_rate)
 

@@ -64,7 +64,9 @@ def download_file(url: str, dest: Path, desc: str = "Downloading") -> None:
                 downloaded += len(chunk)
                 if total:
                     pct = downloaded * 100 // total
-                    print(f"\r  Progress: {pct}% ({downloaded // 1024 // 1024}MB)", end="")
+                    print(
+                        f"\r  Progress: {pct}% ({downloaded // 1024 // 1024}MB)", end=""
+                    )
 
     print()  # newline after progress
 
@@ -78,14 +80,22 @@ def extract_archive(archive_path: Path, dest_dir: Path, archive_type: str) -> No
         with zipfile.ZipFile(archive_path, "r") as zf:
             zf.extractall(dest_dir)
     elif archive_type in ("tar.xz", "tar.gz", "tar"):
-        mode = "r:xz" if archive_type == "tar.xz" else "r:gz" if archive_type == "tar.gz" else "r"
+        mode = (
+            "r:xz"
+            if archive_type == "tar.xz"
+            else "r:gz"
+            if archive_type == "tar.gz"
+            else "r"
+        )
         with tarfile.open(archive_path, mode) as tf:
             tf.extractall(dest_dir)
     else:
         raise ValueError(f"Unknown archive type: {archive_type}")
 
 
-def find_ffmpeg_binaries(extract_dir: Path, plat: str) -> tuple[Path | None, Path | None]:
+def find_ffmpeg_binaries(
+    extract_dir: Path, plat: str
+) -> tuple[Path | None, Path | None]:
     """Find ffmpeg and ffprobe binaries in extracted directory."""
     ffmpeg_name = "ffmpeg.exe" if plat == "win32" else "ffmpeg"
     ffprobe_name = "ffprobe.exe" if plat == "win32" else "ffprobe"
@@ -125,7 +135,9 @@ def download_ffmpeg(dest_dir: Path) -> None:
             extract_archive(ffmpeg_zip, temp_dir / "ffmpeg_extract", "zip")
 
             ffprobe_zip = temp_dir / "ffprobe.zip"
-            download_file(ffmpeg_info["ffprobe_url"], ffprobe_zip, "Downloading FFprobe")
+            download_file(
+                ffmpeg_info["ffprobe_url"], ffprobe_zip, "Downloading FFprobe"
+            )
             extract_archive(ffprobe_zip, temp_dir / "ffprobe_extract", "zip")
 
             # Find and copy binaries
@@ -228,7 +240,15 @@ def convert_icon_to_icns(project_dir: Path) -> None:
         for size, filename in sizes:
             output = iconset_dir / filename
             subprocess.run(
-                ["sips", "-z", str(size), str(size), str(icon_png), "--out", str(output)],
+                [
+                    "sips",
+                    "-z",
+                    str(size),
+                    str(size),
+                    str(icon_png),
+                    "--out",
+                    str(output),
+                ],
                 check=True,
                 capture_output=True,
             )
@@ -302,7 +322,9 @@ def main() -> int:
     """Main build function."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Build acapella-maker standalone executables")
+    parser = argparse.ArgumentParser(
+        description="Build acapella-maker standalone executables"
+    )
     parser.add_argument(
         "--skip-ffmpeg",
         action="store_true",

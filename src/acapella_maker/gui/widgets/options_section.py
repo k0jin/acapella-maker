@@ -39,7 +39,9 @@ class OptionsSection(QWidget):
         threshold_layout = QHBoxLayout()
         threshold_label = QLabel("Silence threshold:")
         threshold_label.setMinimumWidth(110)
-        threshold_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        threshold_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
 
         self.threshold_slider = QSlider(Qt.Orientation.Horizontal)
         self.threshold_slider.setRange(0, 100)

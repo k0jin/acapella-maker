@@ -60,7 +60,9 @@ class TestLoadAudio:
 class TestSaveAudio:
     """Tests for save_audio function."""
 
-    def test_save_mono_audio(self, mono_audio: np.ndarray, tmp_path: Path, sample_rate: int):
+    def test_save_mono_audio(
+        self, mono_audio: np.ndarray, tmp_path: Path, sample_rate: int
+    ):
         """Test saving mono audio to file."""
         output_path = tmp_path / "output.wav"
         result = save_audio(mono_audio, output_path, sample_rate)
@@ -73,7 +75,9 @@ class TestSaveAudio:
         assert sr == sample_rate
         assert loaded.shape[0] == len(mono_audio)
 
-    def test_save_stereo_audio(self, stereo_audio: np.ndarray, tmp_path: Path, sample_rate: int):
+    def test_save_stereo_audio(
+        self, stereo_audio: np.ndarray, tmp_path: Path, sample_rate: int
+    ):
         """Test saving stereo audio to file."""
         output_path = tmp_path / "stereo_output.wav"
         result = save_audio(stereo_audio, output_path, sample_rate)
@@ -87,7 +91,9 @@ class TestSaveAudio:
         assert loaded.ndim == 2
         assert loaded.shape[1] == 2  # 2 channels
 
-    def test_save_creates_parent_dirs(self, mono_audio: np.ndarray, tmp_path: Path, sample_rate: int):
+    def test_save_creates_parent_dirs(
+        self, mono_audio: np.ndarray, tmp_path: Path, sample_rate: int
+    ):
         """Test that save_audio creates parent directories."""
         output_path = tmp_path / "nested" / "dirs" / "output.wav"
         result = save_audio(mono_audio, output_path, sample_rate)

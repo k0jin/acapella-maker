@@ -130,14 +130,15 @@ class TestExtractCommand:
         mock_vocals[1] = mock_vocals[0]
         return mock_vocals, SAMPLE_RATE
 
-    def test_extract_with_valid_file(
-        self, temp_audio_file: Path, tmp_path: Path
-    ):
+    def test_extract_with_valid_file(self, temp_audio_file: Path, tmp_path: Path):
         """Test extract command with valid audio file."""
         output_path = tmp_path / "output.wav"
 
         with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
-            with patch("acapella_maker.core.pipeline.extract_vocals", return_value=self._mock_vocals()):
+            with patch(
+                "acapella_maker.core.pipeline.extract_vocals",
+                return_value=self._mock_vocals(),
+            ):
                 result = runner.invoke(
                     app,
                     ["extract", str(temp_audio_file), "-o", str(output_path)],
@@ -148,30 +149,38 @@ class TestExtractCommand:
         assert "Output:" in result.stdout
         assert output_path.exists()
 
-    def test_extract_with_no_trim(
-        self, temp_audio_file: Path, tmp_path: Path
-    ):
+    def test_extract_with_no_trim(self, temp_audio_file: Path, tmp_path: Path):
         """Test extract with --no-trim flag."""
         output_path = tmp_path / "output_no_trim.wav"
 
         with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
-            with patch("acapella_maker.core.pipeline.extract_vocals", return_value=self._mock_vocals()):
+            with patch(
+                "acapella_maker.core.pipeline.extract_vocals",
+                return_value=self._mock_vocals(),
+            ):
                 result = runner.invoke(
                     app,
-                    ["extract", str(temp_audio_file), "-o", str(output_path), "--no-trim"],
+                    [
+                        "extract",
+                        str(temp_audio_file),
+                        "-o",
+                        str(output_path),
+                        "--no-trim",
+                    ],
                 )
 
         assert result.exit_code == 0
         assert output_path.exists()
 
-    def test_extract_with_custom_threshold(
-        self, temp_audio_file: Path, tmp_path: Path
-    ):
+    def test_extract_with_custom_threshold(self, temp_audio_file: Path, tmp_path: Path):
         """Test extract with custom silence threshold."""
         output_path = tmp_path / "output_custom.wav"
 
         with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
-            with patch("acapella_maker.core.pipeline.extract_vocals", return_value=self._mock_vocals()):
+            with patch(
+                "acapella_maker.core.pipeline.extract_vocals",
+                return_value=self._mock_vocals(),
+            ):
                 result = runner.invoke(
                     app,
                     [

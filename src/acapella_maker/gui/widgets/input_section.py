@@ -54,7 +54,9 @@ class InputSection(QWidget):
         file_layout = QHBoxLayout()
         file_label = QLabel("File:")
         file_label.setFixedWidth(80)
-        file_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        file_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
         self.file_edit = QLineEdit()
         self.file_edit.setPlaceholderText("Select an audio file or drag and drop...")
         self.browse_btn = QPushButton("Browse...")
@@ -75,7 +77,9 @@ class InputSection(QWidget):
         url_layout = QHBoxLayout()
         url_label = QLabel("YouTube:")
         url_label.setFixedWidth(80)
-        url_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        url_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
         self.url_edit = QLineEdit()
         self.url_edit.setPlaceholderText("Paste a YouTube URL...")
         self.url_status = QLabel()
@@ -122,9 +126,7 @@ class InputSection(QWidget):
             valid_color = (
                 self._color_manager.valid_input if self._color_manager else "#2e7d32"
             )
-            self.url_status.setStyleSheet(
-                f"color: {valid_color}; font-weight: bold;"
-            )
+            self.url_status.setStyleSheet(f"color: {valid_color}; font-weight: bold;")
             self.file_edit.clear()
             self.input_changed.emit(text)
         else:

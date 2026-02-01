@@ -72,8 +72,8 @@ class TestYouTubeDownload:
 
         # Mock yt-dlp to avoid actual download
         mock_ydl = mocker.patch("acapella_maker.core.youtube.yt_dlp.YoutubeDL")
-        mock_ydl.return_value.__enter__.return_value.extract_info.side_effect = Exception(
-            "Invalid URL"
+        mock_ydl.return_value.__enter__.return_value.extract_info.side_effect = (
+            Exception("Invalid URL")
         )
 
         with pytest.raises(YouTubeDownloadError):

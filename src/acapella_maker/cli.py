@@ -52,7 +52,9 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-def resolve_input_source(input_source: str, console: Console) -> tuple[Path, str | None]:
+def resolve_input_source(
+    input_source: str, console: Console
+) -> tuple[Path, str | None]:
     """Resolve input source to a file path, downloading from YouTube if needed.
 
     Args:
@@ -161,7 +163,11 @@ def extract(
     config = get_config()
 
     # Use config defaults if not specified
-    threshold = silence_threshold if silence_threshold is not None else config.audio.silence_threshold_db
+    threshold = (
+        silence_threshold
+        if silence_threshold is not None
+        else config.audio.silence_threshold_db
+    )
     trim_silence = config.audio.trim_silence and not no_trim
 
     options = ProcessingOptions(
@@ -192,7 +198,9 @@ def extract(
             console.print(f"[green]BPM:[/green] {bpm}")
 
             # Vocal extraction
-            task = progress.add_task("Extracting vocals (this may take a while)...", total=None)
+            task = progress.add_task(
+                "Extracting vocals (this may take a while)...", total=None
+            )
 
             # Create new pipeline for full processing
             result = pipeline.process(input_file, output)
@@ -308,13 +316,19 @@ def config_cmd(
         table.add_column("Value", style="white")
 
         # Audio settings
-        table.add_row("audio", "silence_threshold_db", str(config.audio.silence_threshold_db))
+        table.add_row(
+            "audio", "silence_threshold_db", str(config.audio.silence_threshold_db)
+        )
         table.add_row("audio", "trim_silence", str(config.audio.trim_silence))
         table.add_row("audio", "fade_in_ms", str(config.audio.fade_in_ms))
         table.add_row("audio", "buffer_before_ms", str(config.audio.buffer_before_ms))
 
         # Output settings
-        table.add_row("output", "default_directory", config.output.default_directory or "(~/Downloads)")
+        table.add_row(
+            "output",
+            "default_directory",
+            config.output.default_directory or "(~/Downloads)",
+        )
         table.add_row("output", "filename_template", config.output.filename_template)
 
         # Logging settings

@@ -83,7 +83,9 @@ class TestAcapellaPipeline:
 
         result = pipeline.process(temp_audio_file)
 
-        expected_output = temp_audio_file.parent / f"{temp_audio_file.stem}_acapella.wav"
+        expected_output = (
+            temp_audio_file.parent / f"{temp_audio_file.stem}_acapella.wav"
+        )
         assert result.output_path == expected_output
         assert expected_output.exists()
 
@@ -151,7 +153,9 @@ class TestAcapellaPipelineDetectBPMOnly:
         assert isinstance(bpm, float)
         assert bpm > 0
 
-    def test_detect_bpm_only_accepts_string_path(self, temp_audio_file: Path, mock_pipeline_bpm):
+    def test_detect_bpm_only_accepts_string_path(
+        self, temp_audio_file: Path, mock_pipeline_bpm
+    ):
         """Test BPM detection accepts string path."""
         pipeline = AcapellaPipeline()
 

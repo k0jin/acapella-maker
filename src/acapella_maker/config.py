@@ -105,13 +105,12 @@ class ColorsConfig:
     progress_bar: str = "#FF5C8A"  # Progress bar chunk color
 
     # panel_background: str = "#2A2726"  # QGroupBox/QFrame backgrounds
-    panel_background: str = "#2A2726"   # QGroupBox/QFrame backgrounds
+    panel_background: str = "#2A2726"  # QGroupBox/QFrame backgrounds
     window_background: str = "#3F3E41"  # Main window background
     button_background: str = "#151516"  # Button background color
 
-    header_text: str = "#E29A4A"   # Section header text color
+    header_text: str = "#E29A4A"  # Section header text color
     panel_text: str = "#E29A4A"  # In-panel text color
-
 
 
 @dataclass
@@ -235,6 +234,7 @@ def load_config() -> Config:
         return Config.from_dict(data)
     except Exception as e:
         import logging
+
         logger = logging.getLogger(__name__)
         logger.warning("Failed to load config: %s, using defaults", e)
         return Config()
