@@ -233,8 +233,10 @@ def load_config() -> Config:
         with open(config_path, "rb") as f:
             data = tomllib.load(f)
         return Config.from_dict(data)
-    except Exception:
-        # Return defaults if config file is invalid
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning("Failed to load config: %s, using defaults", e)
         return Config()
 
 

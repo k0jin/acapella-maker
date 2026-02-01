@@ -1,5 +1,6 @@
 """Output section widget for output path selection."""
 
+import os
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -111,9 +112,8 @@ class OutputSection(QWidget):
         path = self.output_edit.text()
         if not path:
             return False
-        # Check parent directory exists
         parent = Path(path).parent
-        return parent.exists()
+        return parent.exists() and os.access(parent, os.W_OK)
 
     def clear(self):
         """Clear the output path."""
