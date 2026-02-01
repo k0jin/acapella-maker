@@ -65,15 +65,17 @@ jobs:
       - name: Test executable (Unix)
         if: matrix.platform != 'windows'
         run: |
-          tar -xzf acapella-maker-${{ matrix.platform }}.tar.gz
-          ./acapella-maker/acapella-maker --version
+          mkdir -p test-dist
+          tar -xzf acapella-maker-${{ matrix.platform }}.tar.gz -C test-dist
+          ./test-dist/acapella-maker/acapella-maker --version
 
       - name: Test executable (Windows)
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
-          Expand-Archive -Path acapella-maker-windows.zip -DestinationPath .
-          .\acapella-maker\acapella-maker.exe --version
+          New-Item -ItemType Directory -Path test-dist -Force
+          Expand-Archive -Path acapella-maker-windows.zip -DestinationPath test-dist
+          .\test-dist\acapella-maker\acapella-maker.exe --version
 
   release:
     needs: build
