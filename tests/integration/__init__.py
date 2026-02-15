@@ -1,1 +1,1 @@
-"""Integration tests for Acapella Maker."""
+"""Integration tests for Acapella."""

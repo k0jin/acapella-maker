@@ -2,7 +2,7 @@
 
 import pytest
 
-from acapella_maker.core.youtube import is_youtube_url
+from acapella.core.youtube import is_youtube_url
 
 
 class TestIsYouTubeUrl:
@@ -67,11 +67,11 @@ class TestYouTubeDownload:
 
     def test_download_requires_valid_url(self, mocker, tmp_path):
         """Test that download validates URL format."""
-        from acapella_maker.core.youtube import download_audio
-        from acapella_maker.exceptions import YouTubeDownloadError
+        from acapella.core.youtube import download_audio
+        from acapella.exceptions import YouTubeDownloadError
 
         # Mock yt-dlp to avoid actual download
-        mock_ydl = mocker.patch("acapella_maker.core.youtube.yt_dlp.YoutubeDL")
+        mock_ydl = mocker.patch("acapella.core.youtube.yt_dlp.YoutubeDL")
         mock_ydl.return_value.__enter__.return_value.extract_info.side_effect = (
             Exception("Invalid URL")
         )

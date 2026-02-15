@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=acapella_maker --cov-report=xml --cov-report=term-missing
+          pytest --cov=acapella --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11'

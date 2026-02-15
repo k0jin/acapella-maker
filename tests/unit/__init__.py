@@ -1,1 +1,1 @@
-"""Unit tests for Acapella Maker."""
+"""Unit tests for Acapella."""

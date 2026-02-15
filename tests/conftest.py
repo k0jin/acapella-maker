@@ -1,4 +1,4 @@
-"""Shared test fixtures for Acapella Maker tests."""
+"""Shared test fixtures for Acapella tests."""
 
 import tempfile
 from pathlib import Path
@@ -125,7 +125,7 @@ def mock_demucs(mocker):
     mock_vocals[0] = (np.sin(2 * np.pi * 440 * t) * 0.3).astype(np.float32)
     mock_vocals[1] = mock_vocals[0]
 
-    mock = mocker.patch("acapella_maker.core.vocal_extractor.extract_vocals")
+    mock = mocker.patch("acapella.core.vocal_extractor.extract_vocals")
     mock.return_value = (mock_vocals, SAMPLE_RATE)
     return mock
 
@@ -138,7 +138,7 @@ def mock_extract_vocals(mocker):
     mock_vocals[0] = (np.sin(2 * np.pi * 440 * t) * 0.3).astype(np.float32)
     mock_vocals[1] = mock_vocals[0]
 
-    mock = mocker.patch("acapella_maker.core.pipeline.extract_vocals")
+    mock = mocker.patch("acapella.core.pipeline.extract_vocals")
     mock.return_value = (mock_vocals, SAMPLE_RATE)
     return mock
 
@@ -158,11 +158,11 @@ def temp_config_dir(tmp_path: Path, monkeypatch):
     config_dir.mkdir()
 
     monkeypatch.setattr(
-        "acapella_maker.config.get_config_dir",
+        "acapella.config.get_config_dir",
         lambda: config_dir,
     )
     # Reset cached config
-    import acapella_maker.config as config_module
+    import acapella.config as config_module
 
     config_module._config = None
 
@@ -176,7 +176,7 @@ def mock_bpm_detection(mocker):
     This is useful for tests that don't need real BPM detection,
     since simple test audio (sine waves) may not have detectable rhythm.
     """
-    mock = mocker.patch("acapella_maker.core.bpm_detector.detect_bpm")
+    mock = mocker.patch("acapella.core.bpm_detector.detect_bpm")
     mock.return_value = 120.0
     return mock
 
@@ -184,6 +184,6 @@ def mock_bpm_detection(mocker):
 @pytest.fixture
 def mock_pipeline_bpm(mocker):
     """Mock BPM detection at the pipeline level."""
-    mock = mocker.patch("acapella_maker.core.pipeline.detect_bpm")
+    mock = mocker.patch("acapella.core.pipeline.detect_bpm")
     mock.return_value = 120.0
     return mock

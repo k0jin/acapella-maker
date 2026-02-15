@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from acapella_maker.core.pipeline import AcapellaPipeline
-from acapella_maker.models.result import ProcessingOptions, ProcessingResult
+from acapella.core.pipeline import AcapellaPipeline
+from acapella.models.result import ProcessingOptions, ProcessingResult
 
 
 class TestAcapellaPipeline:
@@ -105,7 +105,7 @@ class TestAcapellaPipeline:
         pipeline = AcapellaPipeline(options)
 
         # Mock BPM detection to verify it's not called
-        mock_detect = mocker.patch("acapella_maker.core.pipeline.detect_bpm")
+        mock_detect = mocker.patch("acapella.core.pipeline.detect_bpm")
 
         result = pipeline.process(temp_audio_file, output_path)
 
@@ -178,7 +178,7 @@ class TestPipelineWithRealSilenceTrimming:
         mono = np.concatenate([silence, tone])
         mock_vocals = np.stack([mono, mono], axis=0)
 
-        mock = mocker.patch("acapella_maker.core.pipeline.extract_vocals")
+        mock = mocker.patch("acapella.core.pipeline.extract_vocals")
         mock.return_value = (mock_vocals, sample_rate)
         return mock
 

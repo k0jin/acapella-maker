@@ -2,8 +2,8 @@
 
 import pytest
 
-from acapella_maker.exceptions import (
-    AcapellaMakerError,
+from acapella.exceptions import (
+    AcapellaError,
     AudioLoadError,
     AudioSaveError,
     BPMDetectionError,
@@ -17,7 +17,7 @@ class TestExceptionHierarchy:
     """Tests for exception inheritance hierarchy."""
 
     def test_all_exceptions_inherit_from_base(self):
-        """Test that all custom exceptions inherit from AcapellaMakerError."""
+        """Test that all custom exceptions inherit from AcapellaError."""
         exceptions = [
             AudioLoadError,
             AudioSaveError,
@@ -28,11 +28,11 @@ class TestExceptionHierarchy:
         ]
 
         for exc_class in exceptions:
-            assert issubclass(exc_class, AcapellaMakerError)
+            assert issubclass(exc_class, AcapellaError)
 
     def test_base_exception_inherits_from_exception(self):
         """Test that base exception inherits from built-in Exception."""
-        assert issubclass(AcapellaMakerError, Exception)
+        assert issubclass(AcapellaError, Exception)
 
 
 class TestExceptionMessages:
@@ -41,7 +41,7 @@ class TestExceptionMessages:
     @pytest.mark.parametrize(
         "exc_class",
         [
-            AcapellaMakerError,
+            AcapellaError,
             AudioLoadError,
             AudioSaveError,
             BPMDetectionError,
@@ -60,7 +60,7 @@ class TestExceptionMessages:
     @pytest.mark.parametrize(
         "exc_class",
         [
-            AcapellaMakerError,
+            AcapellaError,
             AudioLoadError,
             AudioSaveError,
             BPMDetectionError,
@@ -80,7 +80,7 @@ class TestExceptionMessages:
 
     def test_specific_exception_caught_by_base(self):
         """Test that specific exceptions can be caught by base class."""
-        with pytest.raises(AcapellaMakerError):
+        with pytest.raises(AcapellaError):
             raise AudioLoadError("File not found")
 
     def test_exception_chaining(self):

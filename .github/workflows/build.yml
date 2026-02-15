@@ -20,10 +20,10 @@ jobs:
         include:
           - os: macos-latest
             platform: macos
-            artifact: acapella-maker-macos.tar.gz
+            artifact: acapella-macos.tar.gz
           - os: windows-latest
             platform: windows
-            artifact: acapella-maker-windows.zip
+            artifact: acapella-windows.zip
 
     runs-on: ${{ matrix.os }}
 
@@ -50,7 +50,7 @@ jobs:
 
       - name: Run build script
         run: |
-          python scripts/build.py --output-name acapella-maker-${{ matrix.platform }}
+          python scripts/build.py --output-name acapella-${{ matrix.platform }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -63,16 +63,16 @@ jobs:
         if: matrix.platform != 'windows'
         run: |
           mkdir -p test-dist
-          tar -xzf acapella-maker-${{ matrix.platform }}.tar.gz -C test-dist
-          ./test-dist/acapella-maker/acapella-maker --version
+          tar -xzf acapella-${{ matrix.platform }}.tar.gz -C test-dist
+          ./test-dist/acapella/acapella --version
 
       - name: Test executable (Windows)
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path test-dist -Force
-          Expand-Archive -Path acapella-maker-windows.zip -DestinationPath test-dist
-          .\test-dist\acapella-maker\acapella-maker.exe --version
+          Expand-Archive -Path acapella-windows.zip -DestinationPath test-dist
+          .\test-dist\acapella\acapella.exe --version
 
   release:
     needs: build
@@ -105,10 +105,10 @@ jobs:
           draft: false
           prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
           files: |
-            artifacts/acapella-maker-macos.tar.gz/acapella-maker-macos.tar.gz
-            artifacts/acapella-maker-windows.zip/acapella-maker-windows.zip
+            artifacts/acapella-macos.tar.gz/acapella-macos.tar.gz
+            artifacts/acapella-windows.zip/acapella-windows.zip
           body: |
-            ## Acapella Maker ${{ steps.version.outputs.version }}
+            ## Acapella ${{ steps.version.outputs.version }}
 
             Standalone executables for extracting acapella vocals from audio files.
 
@@ -116,16 +116,16 @@ jobs:
 
             | Platform | File |
             |----------|------|
-            | macOS | `acapella-maker-macos.tar.gz` |
-            | Windows | `acapella-maker-windows.zip` |
+            | macOS | `acapella-macos.tar.gz` |
+            | Windows | `acapella-windows.zip` |
 
             ### Usage
 
             1. Download the archive for your platform
             2. Extract the archive
             3. Run the executable:
-               - macOS/Linux: `./acapella-maker/acapella-maker extract input.mp3`
-               - Windows: `.\acapella-maker\acapella-maker.exe extract input.mp3`
+               - macOS/Linux: `./acapella/acapella extract input.mp3`
+               - Windows: `.\acapella\acapella.exe extract input.mp3`
 
             ### Features
 

@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from acapella_maker.core.silence_trimmer import trim_silence
-from acapella_maker.exceptions import SilenceTrimmingError
+from acapella.core.silence_trimmer import trim_silence
+from acapella.exceptions import SilenceTrimmingError
 
 
 class TestTrimSilence:

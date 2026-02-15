@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "acapella-maker"
+name = "acapella"
 version = "0.1.0"
 description = "Extract + download acapella samples from YouTube with local stem splitting"
 readme = "README.md"
@@ -50,13 +50,13 @@ gui = [
 ]
 
 [project.scripts]
-acapella-maker = "acapella_maker.cli:app"
+acapella = "acapella.cli:app"
 
 [project.gui-scripts]
-acapella-maker-gui = "acapella_maker.gui:main"
+acapella-gui = "acapella.gui:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/acapella_maker"]
+packages = ["src/acapella"]
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -74,7 +74,7 @@ filterwarnings = [
 ]
 
 [tool.coverage.run]
-source = ["src/acapella_maker"]
+source = ["src/acapella"]
 branch = true
 omit = [
     "*/gui/*",

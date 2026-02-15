@@ -6,13 +6,13 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from acapella_maker.core.audio_io import (
+from acapella.core.audio_io import (
     DEFAULT_SAMPLE_RATE,
     get_duration,
     load_audio,
     save_audio,
 )
-from acapella_maker.exceptions import AudioLoadError, AudioSaveError
+from acapella.exceptions import AudioLoadError, AudioSaveError
 
 
 class TestLoadAudio:

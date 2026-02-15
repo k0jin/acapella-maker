@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 from typer.testing import CliRunner
 
-from acapella_maker import __version__
-from acapella_maker.cli import app
+from acapella import __version__
+from acapella.cli import app
 
 runner = CliRunner()
 
@@ -96,7 +96,7 @@ class TestBPMCommand:
 
     def test_bpm_with_valid_file(self, temp_audio_file: Path):
         """Test bpm command with valid audio file."""
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             result = runner.invoke(app, ["bpm", str(temp_audio_file)])
 
         assert result.exit_code == 0
@@ -134,9 +134,9 @@ class TestExtractCommand:
         """Test extract command with valid audio file."""
         output_path = tmp_path / "output.wav"
 
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             with patch(
-                "acapella_maker.core.pipeline.extract_vocals",
+                "acapella.core.pipeline.extract_vocals",
                 return_value=self._mock_vocals(),
             ):
                 result = runner.invoke(
@@ -153,9 +153,9 @@ class TestExtractCommand:
         """Test extract with --no-trim flag."""
         output_path = tmp_path / "output_no_trim.wav"
 
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             with patch(
-                "acapella_maker.core.pipeline.extract_vocals",
+                "acapella.core.pipeline.extract_vocals",
                 return_value=self._mock_vocals(),
             ):
                 result = runner.invoke(
@@ -176,9 +176,9 @@ class TestExtractCommand:
         """Test extract with custom silence threshold."""
         output_path = tmp_path / "output_custom.wav"
 
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             with patch(
-                "acapella_maker.core.pipeline.extract_vocals",
+                "acapella.core.pipeline.extract_vocals",
                 return_value=self._mock_vocals(),
             ):
                 result = runner.invoke(
@@ -202,7 +202,7 @@ class TestVerboseLogging:
 
     def test_verbose_flag_accepted(self, temp_audio_file: Path):
         """Test that --verbose flag is accepted."""
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             result = runner.invoke(app, ["--verbose", "bpm", str(temp_audio_file)])
 
         assert result.exit_code == 0
@@ -210,7 +210,7 @@ class TestVerboseLogging:
 
     def test_verbose_short_flag_accepted(self, temp_audio_file: Path):
         """Test that -v flag is accepted."""
-        with patch("acapella_maker.core.pipeline.detect_bpm", return_value=120.0):
+        with patch("acapella.core.pipeline.detect_bpm", return_value=120.0):
             result = runner.invoke(app, ["-v", "bpm", str(temp_audio_file)])
 
         assert result.exit_code == 0

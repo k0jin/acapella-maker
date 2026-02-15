@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Build script for Acapella Maker
+    Build script for Acapella
 
 .DESCRIPTION
-    Build script for creating standalone Acapella Maker executables on Windows.
+    Build script for creating standalone Acapella executables on Windows.
 
 .PARAMETER Clean
     Clean build artifacts before building (default: on)
@@ -98,7 +98,7 @@ function Show-Usage {
     Write-Host @"
 Usage: .\build.ps1 [options]
 
-Build script for Acapella Maker
+Build script for Acapella
 
 Options:
   -c, -Clean       Clean build artifacts before building (default: on)
@@ -217,14 +217,14 @@ Log-Success "Build complete!"
 Write-Host ""
 Log-Info "Build artifacts:"
 
-if (-not $CliOnly -and (Test-Path "dist\AcapellaMaker")) {
-    $guiSize = Get-FolderSize "dist\AcapellaMaker"
-    Log-Info "  GUI App: dist\AcapellaMaker ($guiSize)"
+if (-not $CliOnly -and (Test-Path "dist\Acapella")) {
+    $guiSize = Get-FolderSize "dist\Acapella"
+    Log-Info "  GUI App: dist\Acapella ($guiSize)"
 }
 
-if (-not $GuiOnly -and (Test-Path "dist\acapella-maker")) {
-    $cliSize = Get-FolderSize "dist\acapella-maker"
-    Log-Info "  CLI: dist\acapella-maker ($cliSize)"
+if (-not $GuiOnly -and (Test-Path "dist\acapella")) {
+    $cliSize = Get-FolderSize "dist\acapella"
+    Log-Info "  CLI: dist\acapella ($cliSize)"
 }
 
 # List any archives created
@@ -235,12 +235,12 @@ Get-ChildItem -Path "." -Filter "*.zip" -ErrorAction SilentlyContinue | ForEach-
 
 # Open the app if requested
 if ($Open) {
-    if (-not $CliOnly -and (Test-Path "dist\AcapellaMaker\AcapellaMaker.exe")) {
-        Log-Info "Opening AcapellaMaker..."
-        Start-Process "dist\AcapellaMaker\AcapellaMaker.exe"
-    } elseif (-not $GuiOnly -and (Test-Path "dist\acapella-maker\acapella-maker.exe")) {
-        Log-Info "Opening acapella-maker CLI..."
-        Start-Process "cmd" -ArgumentList "/k", "dist\acapella-maker\acapella-maker.exe", "--help"
+    if (-not $CliOnly -and (Test-Path "dist\Acapella\Acapella.exe")) {
+        Log-Info "Opening Acapella..."
+        Start-Process "dist\Acapella\Acapella.exe"
+    } elseif (-not $GuiOnly -and (Test-Path "dist\acapella\acapella.exe")) {
+        Log-Info "Opening acapella CLI..."
+        Start-Process "cmd" -ArgumentList "/k", "dist\acapella\acapella.exe", "--help"
     } else {
         Log-Warn "Cannot open app: executable not found"
         Log-Warn "Did you build with -CliOnly?"

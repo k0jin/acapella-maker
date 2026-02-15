@@ -1,4 +1,4 @@
-# Acapella Maker
+# Acapella
 
 <img width="256" height="256" alt="icon" src="https://github.com/user-attachments/assets/9de7b8a6-22a4-41db-9b33-417185aff673" /> <img width="256" height="256" alt="Screenshot 2026-01-30 at 10 44 11 PM" src="https://github.com/user-attachments/assets/d2607a98-4f0a-43e9-b768-73b14025ae73" />
 
@@ -38,28 +38,28 @@ pip install -e ".[gui]"
 ### GUI
 
 ```bash
-acapella-maker-gui
+acapella-gui
 ```
 
 Or run as a module:
 ```bash
-python -m acapella_maker.gui
+python -m acapella.gui
 ```
 
 ### Command Line
 
 ```bash
 # Extract vocals from a local file
-acapella-maker extract song.mp3
+acapella extract song.mp3
 
 # Extract vocals from YouTube
-acapella-maker extract "https://youtube.com/watch?v=..."
+acapella extract "https://youtube.com/watch?v=..."
 
 # With options
-acapella-maker extract song.mp3 -o vocals.wav --silence-threshold 40
+acapella extract song.mp3 -o vocals.wav --silence-threshold 40
 
 # BPM detection only
-acapella-maker bpm song.mp3
+acapella bpm song.mp3
 ```
 
 ## Options
@@ -81,12 +81,12 @@ pip install -e ".[gui,build]"
 ./build.sh
 
 # Or manually with PyInstaller
-pyinstaller acapella_maker_gui.spec
+pyinstaller acapella_gui.spec
 ```
 
 The built application will be in:
-- **macOS:** `dist/Acapella Maker.app`
-- **Windows:** `dist/AcapellaMaker/AcapellaMaker.exe`
+- **macOS:** `dist/Acapella.app`
+- **Windows:** `dist/Acapella/Acapella.exe`
 
 ### Notes
 

@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from acapella_maker.core.bpm_detector import detect_bpm
-from acapella_maker.exceptions import BPMDetectionError
+from acapella.core.bpm_detector import detect_bpm
+from acapella.exceptions import BPMDetectionError
 
 
 class TestDetectBPM:

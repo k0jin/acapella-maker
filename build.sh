@@ -1,5 +1,5 @@
 #!/bin/bash
-# build.sh - Build script for Acapella Maker
+# build.sh - Build script for Acapella
 #
 # Usage: ./build.sh [options]
 # Run ./build.sh --help for available options
@@ -27,7 +27,7 @@ usage() {
     cat << EOF
 Usage: $(basename "$0") [options]
 
-Build script for Acapella Maker
+Build script for Acapella
 
 Options:
   -c, --clean       Clean build artifacts before building (default: on)
@@ -152,14 +152,14 @@ log_success "Build complete!"
 echo ""
 log_info "Build artifacts:"
 
-if [[ "$CLI_ONLY" != true && -d "dist/Acapella Maker.app" ]]; then
-    GUI_SIZE=$(du -sh "dist/Acapella Maker.app" | cut -f1)
-    log_info "  GUI App: dist/Acapella Maker.app ($GUI_SIZE)"
+if [[ "$CLI_ONLY" != true && -d "dist/Acapella.app" ]]; then
+    GUI_SIZE=$(du -sh "dist/Acapella.app" | cut -f1)
+    log_info "  GUI App: dist/Acapella.app ($GUI_SIZE)"
 fi
 
-if [[ "$GUI_ONLY" != true && -d "dist/acapella-maker" ]]; then
-    CLI_SIZE=$(du -sh "dist/acapella-maker" | cut -f1)
-    log_info "  CLI: dist/acapella-maker ($CLI_SIZE)"
+if [[ "$GUI_ONLY" != true && -d "dist/acapella" ]]; then
+    CLI_SIZE=$(du -sh "dist/acapella" | cut -f1)
+    log_info "  CLI: dist/acapella ($CLI_SIZE)"
 fi
 
 # List any archives created
@@ -173,11 +173,11 @@ done
 # Open the app if requested (macOS only)
 if [[ "$OPEN_APP" == true ]]; then
     if [[ "$(uname)" == "Darwin" ]]; then
-        if [[ -d "dist/Acapella Maker.app" ]]; then
-            log_info "Opening Acapella Maker.app..."
-            open "dist/Acapella Maker.app"
+        if [[ -d "dist/Acapella.app" ]]; then
+            log_info "Opening Acapella.app..."
+            open "dist/Acapella.app"
         else
-            log_warn "Cannot open app: dist/Acapella Maker.app not found"
+            log_warn "Cannot open app: dist/Acapella.app not found"
             log_warn "Did you build with --cli-only?"
         fi
     else

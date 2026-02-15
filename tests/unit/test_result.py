@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from acapella_maker.models.result import ProcessingOptions, ProcessingResult
+from acapella.models.result import ProcessingOptions, ProcessingResult
 
 
 class TestProcessingOptions:

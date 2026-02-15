@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build script for creating standalone acapella-maker executables."""
+"""Build script for creating standalone acapella executables."""
 
 import hashlib
 import os
@@ -210,8 +210,8 @@ def convert_icon_to_icns(project_dir: Path) -> None:
     if get_platform() != "darwin":
         return
 
-    icon_png = project_dir / "src" / "acapella_maker" / "gui" / "icon.png"
-    icon_icns = project_dir / "src" / "acapella_maker" / "gui" / "AppIcon.icns"
+    icon_png = project_dir / "src" / "acapella" / "gui" / "icon.png"
+    icon_icns = project_dir / "src" / "acapella" / "gui" / "AppIcon.icns"
 
     if not icon_png.exists():
         print(f"Warning: Icon PNG not found: {icon_png}")
@@ -290,7 +290,7 @@ def run_pyinstaller(spec_file: Path) -> None:
 def create_archive(dist_dir: Path, output_name: str) -> Path:
     """Create distributable archive from dist directory."""
     plat = get_platform()
-    app_dir = dist_dir / "acapella-maker"
+    app_dir = dist_dir / "acapella"
 
     if not app_dir.exists():
         raise RuntimeError(f"Built application not found: {app_dir}")
@@ -312,7 +312,7 @@ def create_archive(dist_dir: Path, output_name: str) -> Path:
         print(f"Creating archive: {archive_path}")
 
         with tarfile.open(archive_path, "w:gz") as tf:
-            tf.add(app_dir, arcname="acapella-maker")
+            tf.add(app_dir, arcname="acapella")
 
     print(f"Archive created: {archive_path}")
     return archive_path
@@ -323,7 +323,7 @@ def main() -> int:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Build acapella-maker standalone executables"
+        description="Build acapella standalone executables"
     )
     parser.add_argument(
         "--skip-ffmpeg",
@@ -355,8 +355,8 @@ def main() -> int:
     # Determine paths
     script_dir = Path(__file__).parent
     project_dir = script_dir.parent
-    cli_spec_file = project_dir / "acapella-maker.spec"
-    gui_spec_file = project_dir / "acapella_maker_gui.spec"
+    cli_spec_file = project_dir / "acapella.spec"
+    gui_spec_file = project_dir / "acapella_gui.spec"
     ffmpeg_dir = project_dir / "ffmpeg_bin"
     dist_dir = project_dir / "dist"
     plat = get_platform()
@@ -398,15 +398,15 @@ def main() -> int:
     if build_cli:
         print("\n=== Creating CLI Archive ===")
         plat_name = {"darwin": "macos", "linux": "linux", "win32": "windows"}[plat]
-        output_name = args.output_name or f"acapella-maker-{plat_name}"
+        output_name = args.output_name or f"acapella-{plat_name}"
         archive_path = create_archive(dist_dir, output_name)
 
     print("\n=== Build Complete ===")
     if build_cli:
-        print(f"CLI Executable: {dist_dir / 'acapella-maker'}")
+        print(f"CLI Executable: {dist_dir / 'acapella'}")
         print(f"CLI Archive: {archive_path}")
     if build_gui:
-        print(f"GUI App: {dist_dir / 'Acapella Maker.app'}")
+        print(f"GUI App: {dist_dir / 'Acapella.app'}")
 
     return 0
 

@@ -1,1 +1,1 @@
-"""CLI tests for Acapella Maker."""
+"""CLI tests for Acapella."""
