@@ -4,10 +4,12 @@ from acapella.gui.workers.base_worker import BaseWorker
 from acapella.gui.workers.bpm_worker import BPMWorker
 from acapella.gui.workers.download_worker import DownloadWorker
 from acapella.gui.workers.extraction_worker import ExtractionWorker
+from acapella.gui.workers.title_worker import TitleFetchWorker
 
 __all__ = [
     "BaseWorker",
     "BPMWorker",
     "DownloadWorker",
     "ExtractionWorker",
+    "TitleFetchWorker",
 ]
