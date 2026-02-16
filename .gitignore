@@ -17,8 +17,9 @@ ffmpeg_bin/
 .agents/
 .claude/
 
-# Design documentation (local only)
+# Documentation (local only)
 DESIGN.md
+docs/
 
 # Coverage
 .coverage
