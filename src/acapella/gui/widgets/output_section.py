@@ -1,6 +1,7 @@
 """Output section widget for output path selection."""
 
 import os
+import re
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -29,6 +30,8 @@ class OutputSection(QWidget):
     ) -> None:
         super().__init__(parent)
         self._default_dir_getter = default_dir_getter
+        self._syncing = False
+        self._directory = self._default_dir()
         self._setup_ui()
         self._connect_signals()
 
@@ -42,6 +45,24 @@ class OutputSection(QWidget):
         group_layout.setSpacing(12)
         group_layout.setContentsMargins(16, 16, 16, 16)
 
+        # Name row
+        name_layout = QHBoxLayout()
+        name_label = QLabel("Name:")
+        name_label.setFixedWidth(80)
+        name_label.setAlignment(
+            Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter
+        )
+        self.name_edit = QLineEdit()
+        self.name_edit.setPlaceholderText("File name...")
+        self.loading_label = QLabel("Fetching...")
+        self.loading_label.setStyleSheet("color: grey; font-style: italic;")
+        self.loading_label.hide()
+        name_layout.addWidget(name_label)
+        name_layout.addWidget(self.name_edit, 1)
+        name_layout.addWidget(self.loading_label)
+        group_layout.addLayout(name_layout)
+
+        # Save to row
         output_layout = QHBoxLayout()
         output_label = QLabel("Save to:")
         output_label.setFixedWidth(80)
@@ -61,7 +82,45 @@ class OutputSection(QWidget):
     def _connect_signals(self) -> None:
         """Connect widget signals to handlers."""
         self.browse_btn.clicked.connect(self._on_browse)
-        self.output_edit.textChanged.connect(self.output_changed.emit)
+        self.name_edit.textChanged.connect(self._on_name_changed)
+        self.output_edit.textChanged.connect(self._on_output_changed)
+
+    @staticmethod
+    def _sanitize_name(name: str) -> str:
+        """Sanitize a display name into a safe filename stem."""
+        return re.sub(r'[^\w\s-]', '', name).strip().replace(' ', '_')
+
+    def _on_name_changed(self, name: str) -> None:
+        """Sync filepath when name field changes."""
+        if self._syncing:
+            return
+        self._syncing = True
+        try:
+            sanitized = self._sanitize_name(name)
+            if sanitized:
+                path = self._directory / f"{sanitized}.wav"
+                self.output_edit.setText(str(path))
+            else:
+                self.output_edit.setText("")
+            self.output_changed.emit(self.output_edit.text())
+        finally:
+            self._syncing = False
+
+    def _on_output_changed(self, path_text: str) -> None:
+        """Sync name field when filepath changes."""
+        if self._syncing:
+            return
+        self._syncing = True
+        try:
+            if path_text:
+                p = Path(path_text)
+                self.name_edit.setText(p.stem)
+                self._directory = p.parent
+            else:
+                self.name_edit.setText("")
+            self.output_changed.emit(path_text)
+        finally:
+            self._syncing = False
 
     def _on_browse(self) -> None:
         """Handle browse button click."""
@@ -70,14 +129,22 @@ class OutputSection(QWidget):
 
         file_path, _ = QFileDialog.getSaveFileName(
             self,
-            "Save Acapella As",
+            "Save As",
             start_dir,
             "WAV Files (*.wav);;All Files (*)",
         )
         if file_path:
             if not file_path.endswith(".wav"):
                 file_path += ".wav"
-            self.output_edit.setText(file_path)
+            p = Path(file_path)
+            self._directory = p.parent
+            self._syncing = True
+            try:
+                self.name_edit.setText(p.stem)
+                self.output_edit.setText(file_path)
+                self.output_changed.emit(file_path)
+            finally:
+                self._syncing = False
 
     def _default_dir(self) -> Path:
         """Get default output directory from config or fallback."""
@@ -96,14 +163,25 @@ class OutputSection(QWidget):
             is_youtube: Whether the input is a YouTube URL.
         """
         if is_youtube:
-            # For YouTube, use generic name in Downloads
-            output_path = self._default_dir() / "youtube_acapella.wav"
+            self._directory = self._default_dir()
+            self.set_name("")
         else:
-            # For local files, use same directory with _acapella suffix
             input_p = Path(input_path)
-            output_path = input_p.parent / f"{input_p.stem}_acapella.wav"
+            self._directory = input_p.parent
+            self.set_name(input_p.stem)
 
-        self.output_edit.setText(str(output_path))
+    def set_name(self, name: str) -> None:
+        """Set the name field (triggers filepath sync)."""
+        self.name_edit.setText(name)
+
+    def set_name_loading(self, loading: bool) -> None:
+        """Show/hide loading indicator and set name read-only."""
+        self.loading_label.setVisible(loading)
+        self.name_edit.setReadOnly(loading)
+
+    def get_name(self) -> str:
+        """Return the current name field text."""
+        return self.name_edit.text()
 
     def get_output_path(self) -> str:
         """Get the output file path."""
@@ -118,10 +196,12 @@ class OutputSection(QWidget):
         return parent.exists() and os.access(parent, os.W_OK)
 
     def clear(self):
-        """Clear the output path."""
+        """Clear name and output path."""
+        self.name_edit.clear()
         self.output_edit.clear()
 
     def set_enabled(self, enabled: bool):
         """Enable or disable controls."""
+        self.name_edit.setEnabled(enabled)
         self.output_edit.setEnabled(enabled)
         self.browse_btn.setEnabled(enabled)
