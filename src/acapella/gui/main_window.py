@@ -23,7 +23,13 @@ from acapella.gui.widgets import (
     ProgressSection,
     ResultsSection,
 )
-from acapella.gui.workers import BaseWorker, BPMWorker, DownloadWorker, ExtractionWorker
+from acapella.gui.workers import (
+    BaseWorker,
+    BPMWorker,
+    DownloadWorker,
+    ExtractionWorker,
+    TitleFetchWorker,
+)
 from acapella.models.result import ProcessingResult
 
 
@@ -37,6 +43,8 @@ class MainWindow(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self._worker: Optional[Union[ExtractionWorker, BPMWorker, DownloadWorker]] = None
+        self._title_worker: Optional[TitleFetchWorker] = None
+        self._title_generation = 0
         self._config = get_config()
         self._color_manager = color_manager
         self._setup_ui()
@@ -146,8 +154,46 @@ class MainWindow(QMainWindow):
 
     def _on_input_changed(self, input_path: str) -> None:
         """Handle input path change."""
+        # Cancel any running title fetch (no wait — generation counter handles staleness)
+        if self._title_worker and self._title_worker.isRunning():
+            self._title_worker.cancel()
+        self._title_worker = None
+
         is_youtube = self.input_section.is_youtube()
         self.output_section.set_from_input(input_path, is_youtube)
+        self.output_section.set_name_loading(False)
+
+        if is_youtube and input_path:
+            self._title_generation += 1
+            gen = self._title_generation
+            self.output_section.set_name_loading(True)
+            self._title_worker = TitleFetchWorker(input_path, parent=self)
+            self._title_worker.finished_ok.connect(
+                lambda title, g=gen: self._on_title_fetched(title, g)
+            )
+            self._title_worker.error.connect(
+                lambda msg, g=gen: self._on_title_error(msg, g)
+            )
+            self._title_worker.start()
+
+        self._update_button_state()
+
+    def _on_title_fetched(self, title: str, generation: int) -> None:
+        """Handle successful YouTube title fetch."""
+        if generation != self._title_generation:
+            return
+        self.output_section.set_name_loading(False)
+        self.output_section.set_name(title if title else "youtube_audio")
+        self._title_worker = None
+        self._update_button_state()
+
+    def _on_title_error(self, message: str, generation: int) -> None:
+        """Handle YouTube title fetch error."""
+        if generation != self._title_generation:
+            return
+        self.output_section.set_name_loading(False)
+        self.output_section.set_name("youtube_audio")
+        self._title_worker = None
         self._update_button_state()
 
     def _connect_worker_signals(
@@ -168,9 +214,13 @@ class MainWindow(QMainWindow):
         self.results_section.hide()
         self._set_processing_state(True)
 
+        # Add _acapella suffix for extraction output
+        output_path = Path(self.output_section.get_output_path())
+        output_path = output_path.with_stem(output_path.stem + "_acapella")
+
         self._worker = ExtractionWorker(
             input_path=self.input_section.get_input(),
-            output_path=self.output_section.get_output_path(),
+            output_path=str(output_path),
             silence_threshold=self.options_section.get_silence_threshold(),
             trim_silence=self.options_section.get_trim_silence(),
             parent=self,
@@ -312,5 +362,9 @@ class MainWindow(QMainWindow):
 
             self._worker.cancel()
             self._worker.wait(5000)  # Wait up to 5 seconds
+
+        if self._title_worker and self._title_worker.isRunning():
+            self._title_worker.cancel()
+            self._title_worker.wait(2000)
 
         event.accept()
