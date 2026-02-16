@@ -23,7 +23,7 @@ from acapella.gui.widgets import (
     ProgressSection,
     ResultsSection,
 )
-from acapella.gui.workers import BaseWorker, BPMWorker, ExtractionWorker
+from acapella.gui.workers import BaseWorker, BPMWorker, DownloadWorker, ExtractionWorker
 from acapella.models.result import ProcessingResult
 
 
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         color_manager: Optional[ColorManager] = None,
     ) -> None:
         super().__init__(parent)
-        self._worker: Optional[Union[ExtractionWorker, BPMWorker]] = None
+        self._worker: Optional[Union[ExtractionWorker, BPMWorker, DownloadWorker]] = None
         self._config = get_config()
         self._color_manager = color_manager
         self._setup_ui()
@@ -78,14 +78,21 @@ class MainWindow(QMainWindow):
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
 
+        self.download_btn = QPushButton("Download")
+        self.download_btn.setFixedWidth(130)
+        btn_layout.addWidget(self.download_btn)
+        btn_layout.addStretch()
+
         self.bpm_btn = QPushButton("Detect BPM Only")
         self.bpm_btn.setFixedWidth(130)
         btn_layout.addWidget(self.bpm_btn)
+        btn_layout.addStretch()
 
         self.extract_btn = QPushButton("Extract Acapella")
         self.extract_btn.setFixedWidth(130)
         self.extract_btn.setDefault(True)
         btn_layout.addWidget(self.extract_btn)
+        btn_layout.addStretch()
 
         layout.addLayout(btn_layout)
 
@@ -112,6 +119,7 @@ class MainWindow(QMainWindow):
         self.input_section.input_changed.connect(self._on_input_changed)
 
         # Action buttons
+        self.download_btn.clicked.connect(self._on_download)
         self.extract_btn.clicked.connect(self._on_extract)
         self.bpm_btn.clicked.connect(self._on_bpm_only)
 
@@ -125,8 +133,12 @@ class MainWindow(QMainWindow):
         """Update button enabled state based on input validity."""
         has_valid_input = self.input_section.is_valid()
         has_valid_output = self.output_section.is_valid()
+        is_youtube = self.input_section.is_youtube()
         is_processing = self._worker is not None and self._worker.isRunning()
 
+        self.download_btn.setEnabled(
+            has_valid_input and is_youtube and has_valid_output and not is_processing
+        )
         self.extract_btn.setEnabled(
             has_valid_input and has_valid_output and not is_processing
         )
@@ -188,6 +200,29 @@ class MainWindow(QMainWindow):
         self._connect_worker_signals(self._worker, self._on_bpm_finished)
         self._worker.start()
 
+    def _on_download(self) -> None:
+        """Start YouTube audio download."""
+        if not self._validate_inputs():
+            return
+
+        self.results_section.hide()
+        self._set_processing_state(True)
+
+        output_dir = Path(self.output_section.get_output_path()).parent
+
+        self._worker = DownloadWorker(
+            url=self.input_section.get_input(),
+            output_dir=output_dir,
+            parent=self,
+        )
+        self._connect_worker_signals(self._worker, self._on_download_finished)
+        self._worker.start()
+
+    def _on_download_finished(self, output_path: str) -> None:
+        """Handle successful download."""
+        self.progress_section.reset()
+        self.results_section.show_download_result(output_path)
+
     def _validate_inputs(self) -> bool:
         """Validate inputs before processing.
 
@@ -217,6 +252,7 @@ class MainWindow(QMainWindow):
         self.input_section.setEnabled(not processing)
         self.options_section.set_enabled(not processing)
         self.output_section.set_enabled(not processing)
+        self.download_btn.setEnabled(not processing)
         self.extract_btn.setEnabled(not processing)
         self.bpm_btn.setEnabled(not processing)
 

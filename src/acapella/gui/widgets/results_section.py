@@ -62,11 +62,11 @@ class ResultsSection(QWidget):
         success_color = (
             self._color_manager.valid_input if self._color_manager else "#2e7d32"
         )
-        header = QLabel("Processing Complete!")
-        header.setStyleSheet(
+        self._header = QLabel("Processing Complete!")
+        self._header.setStyleSheet(
             f"font-weight: bold; font-size: 14px; color: {success_color};"
         )
-        frame_layout.addWidget(header)
+        frame_layout.addWidget(self._header)
 
         # Results grid
         grid = QGridLayout()
@@ -146,6 +146,7 @@ class ResultsSection(QWidget):
         Args:
             result: The ProcessingResult from the pipeline.
         """
+        self._header.setText("Processing Complete!")
         self._output_path = str(result.output_path)
 
         self.output_label.setText(str(result.output_path))
@@ -170,6 +171,7 @@ class ResultsSection(QWidget):
             bpm: Detected BPM value.
             input_name: Name of the input file/source.
         """
+        self._header.setText("Processing Complete!")
         self._output_path = ""
 
         self.output_label.setText(f"(BPM detection only for: {input_name})")
@@ -177,6 +179,23 @@ class ResultsSection(QWidget):
         self.duration_label.setText("N/A")
         self.trimmed_label.setText("N/A")
         self.open_folder_btn.setEnabled(False)
+
+        self.show()
+
+    def show_download_result(self, output_path: str) -> None:
+        """Display download-only result.
+
+        Args:
+            output_path: Path to the downloaded file.
+        """
+        self._header.setText("Download Complete!")
+        self._output_path = output_path
+
+        self.output_label.setText(output_path)
+        self.bpm_label.setText("N/A")
+        self.duration_label.setText("N/A")
+        self.trimmed_label.setText("N/A")
+        self.open_folder_btn.setEnabled(True)
 
         self.show()
 
