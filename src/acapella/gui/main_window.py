@@ -42,7 +42,9 @@ class MainWindow(QMainWindow):
         color_manager: Optional[ColorManager] = None,
     ) -> None:
         super().__init__(parent)
-        self._worker: Optional[Union[ExtractionWorker, BPMWorker, DownloadWorker]] = None
+        self._worker: Optional[Union[ExtractionWorker, BPMWorker, DownloadWorker]] = (
+            None
+        )
         self._title_worker: Optional[TitleFetchWorker] = None
         self._title_generation = 0
         self._config = get_config()

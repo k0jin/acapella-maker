@@ -88,7 +88,7 @@ class OutputSection(QWidget):
     @staticmethod
     def _sanitize_name(name: str) -> str:
         """Sanitize a display name into a safe filename stem."""
-        return re.sub(r'[^\w\s-]', '', name).strip().replace(' ', '_')
+        return re.sub(r"[^\w\s-]", "", name).strip().replace(" ", "_")
 
     def _on_name_changed(self, name: str) -> None:
         """Sync filepath when name field changes."""
