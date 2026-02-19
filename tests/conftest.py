@@ -1,8 +1,6 @@
 """Shared test fixtures for Acapella tests."""
 
-import tempfile
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 import pytest

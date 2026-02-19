@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Build script for creating standalone acapella executables."""
 
-import hashlib
 import os
 import platform
 import shutil

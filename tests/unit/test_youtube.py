@@ -54,7 +54,6 @@ class TestIsYouTubeUrl:
         """Test that URL matching handles case correctly."""
         # Video IDs are case-sensitive, but domain should work either way
         url_lower = "https://www.youtube.com/watch?v=AbCdEfGhIjK"
-        url_upper = "https://www.YOUTUBE.com/watch?v=AbCdEfGhIjK"
 
         # Both should match (domain is case-insensitive in practice)
         # Note: Our regex is case-sensitive for domain, which is technically

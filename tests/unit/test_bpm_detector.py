@@ -53,7 +53,6 @@ class TestDetectBPM:
         # Create audio with clear rhythm for reliable BPM detection
         duration = 4.0
         samples = int(sample_rate * duration)
-        t = np.linspace(0, duration, samples, endpoint=False)
 
         # Create click track at 120 BPM
         audio = np.zeros(samples, dtype=np.float32)
@@ -98,7 +97,6 @@ class TestBPMDetectionWithRhythm:
         """Create audio with clear 120 BPM rhythm (2 beats per second)."""
         duration = 4.0  # 4 seconds = 8 beats at 120 BPM
         samples = int(sample_rate * duration)
-        t = np.linspace(0, duration, samples, endpoint=False)
 
         # Create click track at 120 BPM (every 0.5 seconds)
         audio = np.zeros(samples, dtype=np.float32)

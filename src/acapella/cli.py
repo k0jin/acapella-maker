@@ -12,7 +12,6 @@ from rich.table import Table
 
 from acapella import __version__
 from acapella.config import (
-    Config,
     get_config,
     get_config_path,
     init_config,

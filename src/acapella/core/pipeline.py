@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from acapella.core.audio_io import get_duration, load_audio, save_audio
+from acapella.core.audio_io import get_duration, save_audio
 from acapella.core.bpm_detector import detect_bpm
 from acapella.core.silence_trimmer import trim_silence
 from acapella.core.vocal_extractor import extract_vocals

@@ -12,7 +12,7 @@ from acapella.core.audio_io import (
     load_audio,
     save_audio,
 )
-from acapella.exceptions import AudioLoadError, AudioSaveError
+from acapella.exceptions import AudioLoadError
 
 
 class TestLoadAudio:
