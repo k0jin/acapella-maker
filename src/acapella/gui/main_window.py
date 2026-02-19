@@ -108,11 +108,9 @@ class MainWindow(QMainWindow):
         self.progress_section = ProgressSection(color_manager=self._color_manager)
         layout.addWidget(self.progress_section)
 
-        # Results section (hidden by default)
+        # Results section (frame always visible, content shown after processing)
         self.results_section = ResultsSection(color_manager=self._color_manager)
         layout.addWidget(self.results_section)
-
-        layout.addStretch()
 
     def _apply_config(self) -> None:
         """Apply configuration values to UI widgets."""
@@ -211,7 +209,7 @@ class MainWindow(QMainWindow):
         if not self._validate_inputs():
             return
 
-        self.results_section.hide()
+        self.results_section.reset()
         self._set_processing_state(True)
 
         # Add _acapella suffix for extraction output
@@ -239,7 +237,7 @@ class MainWindow(QMainWindow):
             )
             return
 
-        self.results_section.hide()
+        self.results_section.reset()
         self._set_processing_state(True)
 
         self._worker = BPMWorker(
@@ -255,7 +253,7 @@ class MainWindow(QMainWindow):
         if not self._validate_inputs():
             return
 
-        self.results_section.hide()
+        self.results_section.reset()
         self._set_processing_state(True)
 
         output_dir = Path(self.output_section.get_output_path()).parent

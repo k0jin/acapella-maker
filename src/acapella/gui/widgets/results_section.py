@@ -37,26 +37,31 @@ class ResultsSection(QWidget):
         self._color_manager = color_manager
         self._setup_ui()
         self._connect_signals()
-        self.hide()
 
     def _setup_ui(self) -> None:
         """Set up the user interface components."""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        frame = QFrame()
-        frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
-        frame.setAutoFillBackground(True)
+        self._frame = QFrame()
+        self._frame.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Raised)
+        self._frame.setAutoFillBackground(True)
         # Use panel background color if configured, otherwise use palette-aware styling
         if self._color_manager and self._color_manager.panel_background:
-            frame.setStyleSheet(
+            self._frame.setStyleSheet(
                 f"QFrame {{ background-color: {self._color_manager.panel_background}; }}"
             )
         else:
-            frame.setStyleSheet("QFrame { background-color: palette(alternate-base); }")
-        frame_layout = QVBoxLayout(frame)
+            self._frame.setStyleSheet("QFrame { background-color: palette(alternate-base); }")
+        frame_layout = QVBoxLayout(self._frame)
         frame_layout.setSpacing(10)
         frame_layout.setContentsMargins(16, 12, 16, 12)
+
+        # Content container — hidden until results arrive
+        self._content = QWidget()
+        content_layout = QVBoxLayout(self._content)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(10)
 
         # Success header
         success_color = (
@@ -66,7 +71,7 @@ class ResultsSection(QWidget):
         self._header.setStyleSheet(
             f"font-weight: bold; font-size: 14px; color: {success_color};"
         )
-        frame_layout.addWidget(self._header)
+        content_layout.addWidget(self._header)
 
         # Results grid
         grid = QGridLayout()
@@ -90,7 +95,7 @@ class ResultsSection(QWidget):
         grid.addWidget(QLabel("Silence trimmed:"), 3, 0)
         grid.addWidget(self.trimmed_label, 3, 1)
 
-        frame_layout.addLayout(grid)
+        content_layout.addLayout(grid)
 
         # Action buttons
         btn_layout = QHBoxLayout()
@@ -104,8 +109,11 @@ class ResultsSection(QWidget):
         self.another_btn.setFixedWidth(120)
         btn_layout.addWidget(self.another_btn)
 
-        frame_layout.addLayout(btn_layout)
-        layout.addWidget(frame)
+        content_layout.addLayout(btn_layout)
+
+        self._content.hide()
+        frame_layout.addWidget(self._content)
+        layout.addWidget(self._frame)
 
     def _connect_signals(self) -> None:
         """Connect widget signals to handlers."""
@@ -137,7 +145,7 @@ class ResultsSection(QWidget):
 
     def _on_process_another(self) -> None:
         """Handle process another button click."""
-        self.hide()
+        self.reset()
         self.process_another.emit()
 
     def show_result(self, result: ProcessingResult):
@@ -162,7 +170,7 @@ class ResultsSection(QWidget):
         else:
             self.trimmed_label.setText("None")
 
-        self.show()
+        self._content.show()
 
     def show_bpm_result(self, bpm: float, input_name: str):
         """Display BPM-only result.
@@ -180,7 +188,7 @@ class ResultsSection(QWidget):
         self.trimmed_label.setText("N/A")
         self.open_folder_btn.setEnabled(False)
 
-        self.show()
+        self._content.show()
 
     def show_download_result(self, output_path: str) -> None:
         """Display download-only result.
@@ -197,10 +205,10 @@ class ResultsSection(QWidget):
         self.trimmed_label.setText("N/A")
         self.open_folder_btn.setEnabled(True)
 
-        self.show()
+        self._content.show()
 
     def reset(self) -> None:
-        """Reset and hide the results section."""
+        """Reset results and hide content (frame stays visible)."""
         self._output_path = ""
         self.open_folder_btn.setEnabled(True)
-        self.hide()
+        self._content.hide()

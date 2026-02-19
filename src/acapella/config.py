@@ -43,9 +43,9 @@ class WindowConfig:
     """Window dimension configuration."""
 
     min_width: int = 520
-    min_height: int = 680
+    min_height: int = 800
     default_width: int = 520
-    default_height: int = 680
+    default_height: int = 800
 
 
 @dataclass
