@@ -8,12 +8,11 @@ Extract + download + prepare acapella samples from YouTube with local stem split
 
 ## Features
 
-- **AI Stem Splitting** - Local + offline processing using [Demucs](https://github.com/adefossez/demucs)
+- **Stem Splitting** - Local + offline processing using [Demucs](https://github.com/adefossez/demucs)
 - **YouTube Download** - Download and extract vocals directly from YouTube URLs using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 - **BPM Detection** - Automatic tempo detection using [librosa ](https://github.com/librosa/librosa)
 - **Silence Trimming** - Configurable automatic removal of leading/trailing silence
-- **GUI & CLI** - Full-featured graphical interface and command-line tool
-- **Cross-Platform** - Works on macOS, Windows, 
+
 
 
 ## Requirements
