@@ -1,5 +1,6 @@
 """CLI tests using Typer's CliRunner."""
 
+import re
 from pathlib import Path
 from unittest.mock import patch
 
@@ -8,6 +9,12 @@ from typer.testing import CliRunner
 
 from acapella import __version__
 from acapella.cli import app
+
+
+def _strip_ansi(text: str) -> str:
+    """Remove ANSI escape sequences from text."""
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
+
 
 runner = CliRunner()
 
@@ -232,11 +239,12 @@ class TestHelpText:
     def test_extract_help(self):
         """Test extract command help."""
         result = runner.invoke(app, ["extract", "--help"])
+        output = _strip_ansi(result.stdout)
 
         assert result.exit_code == 0
-        assert "--output" in result.stdout
-        assert "--silence-threshold" in result.stdout
-        assert "--no-trim" in result.stdout
+        assert "--output" in output
+        assert "--silence-threshold" in output
+        assert "--no-trim" in output
 
     def test_bpm_help(self):
         """Test bpm command help."""
@@ -248,8 +256,9 @@ class TestHelpText:
     def test_config_help(self):
         """Test config command help."""
         result = runner.invoke(app, ["config", "--help"])
+        output = _strip_ansi(result.stdout)
 
         assert result.exit_code == 0
-        assert "--show" in result.stdout
-        assert "--init" in result.stdout
+        assert "--show" in output
+        assert "--init" in output
         assert "--path" in result.stdout
