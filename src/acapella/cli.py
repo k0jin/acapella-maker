@@ -3,7 +3,7 @@
 import shutil
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import typer
 from rich.console import Console
@@ -53,7 +53,7 @@ def version_callback(value: bool) -> None:
 
 def resolve_input_source(
     input_source: str, console: Console
-) -> tuple[Path, str | None]:
+) -> Tuple[Path, Optional[str]]:
     """Resolve input source to a file path, downloading from YouTube if needed.
 
     Args:
@@ -97,7 +97,7 @@ def get_default_output_dir() -> Path:
 @app.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
-    version: bool | None = typer.Option(
+    version: Optional[bool] = typer.Option(
         None,
         "--version",
         "-V",
@@ -144,7 +144,7 @@ def extract(
         ...,
         help="Input audio file path or YouTube URL",
     ),
-    output: Path | None = typer.Option(
+    output: Optional[Path] = typer.Option(
         None,
         "--output",
         "-o",
@@ -183,7 +183,7 @@ def extract(
     )
 
     pipeline = AcapellaPipeline(options)
-    temp_dir: str | None = None
+    temp_dir: Optional[str] = None
 
     try:
         input_file, temp_dir = resolve_input_source(input_source, console)
@@ -250,7 +250,7 @@ def bpm(
 ) -> None:
     """Detect BPM of an audio file or YouTube URL."""
     pipeline = AcapellaPipeline()
-    temp_dir: str | None = None
+    temp_dir: Optional[str] = None
 
     try:
         input_file, temp_dir = resolve_input_source(input_source, console)
