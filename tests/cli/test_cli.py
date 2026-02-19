@@ -53,11 +53,12 @@ class TestConfigCommand:
     def test_config_show_defaults(self, temp_config_dir: Path):
         """Test config --show displays configuration."""
         result = runner.invoke(app, ["config", "--show"])
+        output = _strip_ansi(result.stdout)
 
         assert result.exit_code == 0
-        assert "silence_threshold_db" in result.stdout
-        assert "trim_silence" in result.stdout
-        assert "Configuration" in result.stdout
+        assert "silence_threshold_db" in output
+        assert "trim_silence" in output
+        assert "Configuration" in output
 
     def test_config_init_creates_file(self, temp_config_dir: Path):
         """Test config --init creates config file."""
@@ -84,8 +85,9 @@ class TestConfigCommand:
         """Test config without options shows usage message."""
         result = runner.invoke(app, ["config"])
 
+        output = _strip_ansi(result.stdout)
         assert result.exit_code == 0
-        assert "--show" in result.stdout or "--init" in result.stdout
+        assert "--show" in output or "--init" in output
 
 
 class TestBPMCommand:
@@ -261,4 +263,4 @@ class TestHelpText:
         assert result.exit_code == 0
         assert "--show" in output
         assert "--init" in output
-        assert "--path" in result.stdout
+        assert "--path" in output
