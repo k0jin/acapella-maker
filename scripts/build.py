@@ -286,13 +286,25 @@ def run_pyinstaller(spec_file: Path) -> None:
     print("PyInstaller completed successfully")
 
 
-def create_archive(dist_dir: Path, output_name: str) -> Path:
-    """Create distributable archive from dist directory."""
-    plat = get_platform()
-    app_dir = dist_dir / "acapella"
+def create_archive(dist_dir: Path, output_name: str, include_gui: bool = True) -> Path:
+    """Create distributable archive from dist directory.
 
-    if not app_dir.exists():
-        raise RuntimeError(f"Built application not found: {app_dir}")
+    Bundles CLI (dist/acapella-cli/) and optionally GUI into a single archive
+    under a top-level acapella/ directory.
+    """
+    plat = get_platform()
+    cli_dir = dist_dir / "acapella-cli"
+
+    if not cli_dir.exists():
+        raise RuntimeError(f"Built CLI application not found: {cli_dir}")
+
+    # Determine GUI path
+    if plat == "darwin":
+        gui_dir = dist_dir / "Acapella.app"
+    else:
+        gui_dir = dist_dir / "Acapella"
+
+    has_gui = include_gui and gui_dir.exists()
 
     if plat == "win32":
         archive_name = f"{output_name}.zip"
@@ -300,18 +312,30 @@ def create_archive(dist_dir: Path, output_name: str) -> Path:
         print(f"Creating archive: {archive_path}")
 
         with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as zf:
-            for root, dirs, files in os.walk(app_dir):
+            # Add CLI under acapella/acapella-cli/
+            for root, dirs, files in os.walk(cli_dir):
                 for file in files:
                     file_path = Path(root) / file
-                    arc_name = file_path.relative_to(dist_dir)
+                    arc_name = Path("acapella") / file_path.relative_to(dist_dir)
                     zf.write(file_path, arc_name)
+            # Add GUI under acapella/Acapella/
+            if has_gui:
+                for root, dirs, files in os.walk(gui_dir):
+                    for file in files:
+                        file_path = Path(root) / file
+                        arc_name = Path("acapella") / file_path.relative_to(dist_dir)
+                        zf.write(file_path, arc_name)
     else:
         archive_name = f"{output_name}.tar.gz"
         archive_path = dist_dir.parent / archive_name
         print(f"Creating archive: {archive_path}")
 
         with tarfile.open(archive_path, "w:gz") as tf:
-            tf.add(app_dir, arcname="acapella")
+            # Add CLI under acapella/acapella-cli/
+            tf.add(cli_dir, arcname="acapella/acapella-cli")
+            # Add GUI under acapella/Acapella.app/
+            if has_gui:
+                tf.add(gui_dir, arcname="acapella/Acapella.app")
 
     print(f"Archive created: {archive_path}")
     return archive_path
@@ -393,19 +417,22 @@ def main() -> int:
         print("\n=== Building GUI App ===")
         run_pyinstaller(gui_spec_file)
 
-    # Create CLI archive
+    # Create archive
     if build_cli:
-        print("\n=== Creating CLI Archive ===")
+        print("\n=== Creating Archive ===")
         plat_name = {"darwin": "macos", "linux": "linux", "win32": "windows"}[plat]
         output_name = args.output_name or f"acapella-{plat_name}"
-        archive_path = create_archive(dist_dir, output_name)
+        archive_path = create_archive(dist_dir, output_name, include_gui=build_gui)
 
     print("\n=== Build Complete ===")
     if build_cli:
-        print(f"CLI Executable: {dist_dir / 'acapella'}")
-        print(f"CLI Archive: {archive_path}")
+        print(f"CLI Executable: {dist_dir / 'acapella-cli'}")
+        print(f"Archive: {archive_path}")
     if build_gui:
-        print(f"GUI App: {dist_dir / 'Acapella.app'}")
+        if plat == "darwin":
+            print(f"GUI App: {dist_dir / 'Acapella.app'}")
+        else:
+            print(f"GUI App: {dist_dir / 'Acapella'}")
 
     return 0
 

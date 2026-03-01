@@ -222,9 +222,9 @@ if (-not $CliOnly -and (Test-Path "dist\Acapella")) {
     Log-Info "  GUI App: dist\Acapella ($guiSize)"
 }
 
-if (-not $GuiOnly -and (Test-Path "dist\acapella")) {
-    $cliSize = Get-FolderSize "dist\acapella"
-    Log-Info "  CLI: dist\acapella ($cliSize)"
+if (-not $GuiOnly -and (Test-Path "dist\acapella-cli")) {
+    $cliSize = Get-FolderSize "dist\acapella-cli"
+    Log-Info "  CLI: dist\acapella-cli ($cliSize)"
 }
 
 # List any archives created
@@ -238,9 +238,9 @@ if ($Open) {
     if (-not $CliOnly -and (Test-Path "dist\Acapella\Acapella.exe")) {
         Log-Info "Opening Acapella..."
         Start-Process "dist\Acapella\Acapella.exe"
-    } elseif (-not $GuiOnly -and (Test-Path "dist\acapella\acapella.exe")) {
+    } elseif (-not $GuiOnly -and (Test-Path "dist\acapella-cli\acapella.exe")) {
         Log-Info "Opening acapella CLI..."
-        Start-Process "cmd" -ArgumentList "/k", "dist\acapella\acapella.exe", "--help"
+        Start-Process "cmd" -ArgumentList "/k", "dist\acapella-cli\acapella.exe", "--help"
     } else {
         Log-Warn "Cannot open app: executable not found"
         Log-Warn "Did you build with -CliOnly?"

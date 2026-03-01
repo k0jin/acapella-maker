@@ -46,11 +46,11 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[build]"
+          pip install -e ".[build,gui]"
 
       - name: Run build script
         run: |
-          python scripts/build.py --cli-only --output-name acapella-${{ matrix.platform }}
+          python scripts/build.py --output-name acapella-${{ matrix.platform }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -59,20 +59,20 @@ jobs:
           path: ${{ matrix.artifact }}
           retention-days: 30
 
-      - name: Test executable (Unix)
+      - name: Test CLI executable (Unix)
         if: matrix.platform != 'windows'
         run: |
           mkdir -p test-dist
           tar -xzf acapella-${{ matrix.platform }}.tar.gz -C test-dist
-          ./test-dist/acapella/acapella --version
+          ./test-dist/acapella/acapella-cli/acapella --version
 
-      - name: Test executable (Windows)
+      - name: Test CLI executable (Windows)
         if: matrix.platform == 'windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path test-dist -Force
           Expand-Archive -Path acapella-windows.zip -DestinationPath test-dist
-          .\test-dist\acapella\acapella.exe --version
+          .\test-dist\acapella\acapella-cli\acapella.exe --version
 
   release:
     needs: build
@@ -111,6 +111,7 @@ jobs:
             ## Acapella ${{ steps.version.outputs.version }}
 
             Standalone executables for extracting acapella vocals from audio files.
+            Includes both CLI and GUI applications.
 
             ### Downloads
 
@@ -121,11 +122,16 @@ jobs:
 
             ### Usage
 
+            **CLI:**
             1. Download the archive for your platform
             2. Extract the archive
             3. Run the executable:
-               - macOS/Linux: `./acapella/acapella extract input.mp3`
-               - Windows: `.\acapella\acapella.exe extract input.mp3`
+               - macOS/Linux: `./acapella/acapella-cli/acapella extract input.mp3`
+               - Windows: `.\acapella\acapella-cli\acapella.exe extract input.mp3`
+
+            **GUI:**
+            - macOS: Open `acapella/Acapella.app`
+            - Windows: Run `acapella\Acapella\Acapella.exe`
 
             ### Features
 
@@ -133,6 +139,7 @@ jobs:
             - Download and process YouTube videos
             - Detect BPM
             - Trim silence from output
+            - GUI app for drag-and-drop usage
 
             ### Requirements
 

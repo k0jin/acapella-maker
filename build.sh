@@ -157,9 +157,9 @@ if [[ "$CLI_ONLY" != true && -d "dist/Acapella.app" ]]; then
     log_info "  GUI App: dist/Acapella.app ($GUI_SIZE)"
 fi
 
-if [[ "$GUI_ONLY" != true && -d "dist/acapella" ]]; then
-    CLI_SIZE=$(du -sh "dist/acapella" | cut -f1)
-    log_info "  CLI: dist/acapella ($CLI_SIZE)"
+if [[ "$GUI_ONLY" != true && -d "dist/acapella-cli" ]]; then
+    CLI_SIZE=$(du -sh "dist/acapella-cli" | cut -f1)
+    log_info "  CLI: dist/acapella-cli ($CLI_SIZE)"
 fi
 
 # List any archives created
